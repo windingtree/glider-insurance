@@ -6,7 +6,8 @@
   "scripts": {
     "start": "npx vercel dev",
     "build": "./scripts/build-swagger.sh",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "scripts/test.sh",
+    "coverage": "COVERAGE=true scripts/test.sh"
   },
   "repository": {
     "type": "git",
@@ -30,8 +31,12 @@
     "node": ">=12.0.0"
   },
   "devDependencies": {
+    "dotenv": "8.2.0",
     "vercel": "21.0.1",
-    "eslint": "7.14.0"
+    "eslint": "7.14.0",
+    "mocha": "8.2.1",
+    "chai": "4.2.0",
+    "nyc": "15.1.0"
   },
   "dependencies": {
     "js-yaml": "3.14.0",
