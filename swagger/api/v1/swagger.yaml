@@ -25,6 +25,30 @@ paths:
         - service
       summary: Ping-pong
       operationId: servicePing
+      parameters:
+        - in: query
+          name: message
+          description: Optional incoming message
+          schema:
+            type: string
+          example: Ping
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Pong"
+    post:
+      tags:
+        - service
+      summary: Ping-pong using POST
+      operationId: servicePingPost
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PingRequest"
       responses:
         200:
           description: OK
@@ -35,10 +59,22 @@ paths:
 
 components:
   schemas:
+    PingRequest:
+      description: Request options for Ping
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          description: Request message
+          type: string
+          example: Ping
 
     Pong:
       description: Pong response object
       type: object
+      required:
+        - message
       properties:
         message:
           description: Response message
