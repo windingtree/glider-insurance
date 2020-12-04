@@ -1,0 +1,40 @@
+{
+  "name": "glider-insurance",
+  "version": "0.1.0",
+  "description": "Multi-tenant bridge for insurance providers on Winding Tree marketplace",
+  "private": true,
+  "scripts": {
+    "start": "npx vercel dev",
+    "build": "./scripts/build-swagger.sh",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/windingtree/glider-insurance.git"
+  },
+  "keywords": [
+    "orgid",
+    "windingtree",
+    "glider",
+    "simard",
+    "insurance",
+    "api"
+  ],
+  "author": "Winding Tree Developers <dev@windingtree.com>",
+  "license": "GPL-3.0-only",
+  "bugs": {
+    "url": "https://github.com/windingtree/glider-insurance/issues"
+  },
+  "homepage": "https://github.com/windingtree/glider-insurance#readme",
+  "engines": {
+    "node": ">=12.0.0"
+  },
+  "devDependencies": {
+    "vercel": "21.0.1",
+    "eslint": "7.14.0"
+  },
+  "dependencies": {
+    "js-yaml": "3.14.0",
+    "ajv": "6.12.6"
+  }
+}

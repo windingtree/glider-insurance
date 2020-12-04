@@ -1,0 +1,51 @@
+openapi: 3.0.3
+
+info:
+  title: Glider Insurance
+  description: Multi-tenant bridge for insurance providers on Winding Tree marketplace
+  contact:
+    email: dev@windingtree.com
+  license:
+    name: GNU GENERAL PUBLIC LICENSE
+    url: https://www.gnu.org/licenses/gpl-3.0.html
+  version: 1.0.0
+
+servers:
+  - url: API_VERSION_URL
+    description: API server
+
+tags:
+  - name: service
+    description: API service functions
+
+paths:
+  /service/ping:
+    get:
+      tags:
+        - service
+      summary: Ping-pong
+      operationId: servicePing
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Pong"
+
+components:
+  schemas:
+
+    Pong:
+      description: Pong response object
+      type: object
+      properties:
+        message:
+          description: Response message
+          type: string
+          example: Pong
+        date:
+          description: Current server date
+          type: string
+          format: date-time
+          example: 2021-04-14T23:20:50.52Z
