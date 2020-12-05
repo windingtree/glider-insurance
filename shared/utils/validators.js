@@ -1,7 +1,8 @@
 const Ajv = require('ajv');
 
 // Validate given data against swagger schema and $ref
-module.exports.validateWithSchemaAndRef = async (schemaJson, ref, data) => {
+module.exports.validateWithSchemaOrRef = (schemaJson, ref, data) => {
+  schemaJson = schemaJson ? schemaJson : {};// Can be null or undefined in case properties validation
   const ajv = new Ajv({
     useDefaults: true,
     coerceTypes: true

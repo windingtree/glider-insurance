@@ -7,7 +7,9 @@
     "start": "npx vercel dev",
     "build": "./scripts/build-swagger.sh",
     "test": "scripts/test.sh",
-    "coverage": "COVERAGE=true scripts/test.sh"
+    "test:coverage": "COVERAGE=true scripts/test.sh",
+    "test:coverage:ci": "COVERAGE=true CONTINUOUS_INTEGRATION=true scripts/test.sh",
+    "test:newman": "./scripts/test-api.sh"
   },
   "repository": {
     "type": "git",
@@ -36,7 +38,8 @@
     "eslint": "7.14.0",
     "mocha": "8.2.1",
     "chai": "4.2.0",
-    "nyc": "15.1.0"
+    "nyc": "15.1.0",
+    "newman": "5.2.1"
   },
   "dependencies": {
     "js-yaml": "3.14.0",

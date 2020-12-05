@@ -6,8 +6,6 @@ VERSIONS=( "v1" )
 rm -rf $API_DOC_FOLDER/*
 mkdir -p $API_DOC_FOLDER
 
-echo "API host URL: $API_HOST_URL"
-
 # Build docs for all API versions
 for version in "${VERSIONS[@]}"
 do
@@ -15,8 +13,8 @@ do
   mkdir -p $API_DOC_FOLDER/$version
   cp ./swagger/src/* $API_DOC_FOLDER/$version
   cp -r ./swagger/api/$version/* $API_DOC_FOLDER/$version
-  API_DOC_URL=$API_HOST_URL/api/doc/$version
-  API_VERSION_URL=$API_HOST_URL/api/$version
+  API_DOC_URL=/api/doc/$version
+  API_VERSION_URL=/api/$version
   API_DOC_URL_ESC=$(printf '%s\n' "$API_DOC_URL" | sed -e 's/[]\/$*.^[]/\\&/g')
   API_VERSION_URL_ESC=$(printf '%s\n' "$API_VERSION_URL" | sed -e 's/[]\/$*.^[]/\\&/g')
   sed -i "s/API_HOST_URL/$API_DOC_URL_ESC/g" $API_DOC_FOLDER/$version/index.html

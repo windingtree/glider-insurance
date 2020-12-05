@@ -1,0 +1,127 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Glider Insurance",
+    "description": "Multi-tenant bridge for insurance providers on Winding Tree marketplace",
+    "contact": {
+      "email": "dev@windingtree.com"
+    },
+    "license": {
+      "name": "GNU GENERAL PUBLIC LICENSE",
+      "url": "https://www.gnu.org/licenses/gpl-3.0.html"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000/api/v1",
+      "description": "API server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "service",
+      "description": "API service functions"
+    }
+  ],
+  "paths": {
+    "/service/ping": {
+      "get": {
+        "tags": [
+          "service"
+        ],
+        "summary": "Ping-pong",
+        "operationId": "servicePing",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "message",
+            "description": "Optional incoming message",
+            "schema": {
+              "type": "string"
+            },
+            "example": "Ping"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pong"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "service"
+        ],
+        "summary": "Ping-pong using POST",
+        "operationId": "servicePingPost",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PingRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pong"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "PingRequest": {
+        "description": "Request options for Ping",
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "properties": {
+          "message": {
+            "description": "Request message",
+            "type": "string",
+            "example": "Ping"
+          }
+        }
+      },
+      "Pong": {
+        "description": "Pong response object",
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "properties": {
+          "message": {
+            "description": "Response message",
+            "type": "string",
+            "example": "Pong"
+          },
+          "date": {
+            "description": "Current server date",
+            "type": "string",
+            "format": "date-time",
+            "example": "2021-04-14T23:20:50.520Z"
+          }
+        }
+      }
+    }
+  }
+}

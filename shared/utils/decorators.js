@@ -11,13 +11,13 @@ const {
   }
 } = require('../constants');
 const { getDeepValue } = require('../utils/object');
-const { validateWithSchemaAndRef } = require('../utils/validators');
+const { validateWithSchemaOrRef } = require('../utils/validators');
 
-// Decorate serverless functions with support for:
+// Decorate serverless function with support for:
 // - error handling
 // - request method validation
-// - request (properties and body) and response data validation against schema
-// - and authentication ability
+// - request (parameters and body object) and response data validation against the schema
+// - authentication ability
 const functionDecorator = (
   func,
   apiVersion,
@@ -46,10 +46,7 @@ const functionDecorator = (
     }
 
     // Request parameters validation
-    const requestParameters = requestMethod === 'get'
-      ? req.query
-      : req.body;
-
+    const requestParameters = req.query;
     const requestParametersSchema = getDeepValue(
       schema,
       `${requestMethod}.parameters`
@@ -62,8 +59,8 @@ const functionDecorator = (
         const isRequired = parameter.required;
         if (parameterValue) {
           const requestModelRef = parameter.schema;
-          const requestValidationResult = await validateWithSchemaAndRef(
-            swaggerJson,
+          const requestValidationResult = validateWithSchemaOrRef(
+            null,
             requestModelRef,
             parameterValue
           );
@@ -83,16 +80,17 @@ const functionDecorator = (
     }
 
     // Request body validation
+    const requestBody = req.body;
     const requestBodySchema = getDeepValue(
       schema,
       `${requestMethod}.requestBody.content.application/json.schema.$ref`
     );
 
     if (requestBodySchema) {
-      const requestBodyValidationResult = await validateWithSchemaAndRef(
+      const requestBodyValidationResult = validateWithSchemaOrRef(
         swaggerJson,
         requestBodySchema,
-        requestParameters
+        requestBody
       );
       if (requestBodyValidationResult !== null) {
         throw new GliderError(
@@ -124,7 +122,7 @@ const functionDecorator = (
       'content.application/json.schema.$ref'
     );
 
-    const responseValidationResult = await validateWithSchemaAndRef(
+    const responseValidationResult = validateWithSchemaOrRef(
       swaggerJson,
       responseModelRef,
       response
