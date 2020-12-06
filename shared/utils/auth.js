@@ -20,7 +20,7 @@ const {
 const {
   INFURA_URI,
   DEFAULT_NETWORK,
-  GLIDER_INSURANCE_DID
+  PROVIDERS_DIDS
 } = require('../config');
 const { toChecksObject } = require('../utils/object');
 
@@ -168,7 +168,7 @@ const verifyJWT = async (type, jwt) => {
         pubKey,
         {
           typ: 'JWT',
-          audience: GLIDER_INSURANCE_DID
+          audience: PROVIDERS_DIDS
         }
       );
     } catch (error) {

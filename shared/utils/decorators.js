@@ -41,12 +41,23 @@ const functionDecorator = (
       );
     }
 
+    const requestMethod = req.method.toLowerCase();
+
+    // HTTP Request method validation
+    if (!Object.keys(schema).includes(requestMethod)) {
+      throw new GliderError(
+        'Method not allowed',
+        METHOD_NOT_ALLOWED
+      );
+    }
+
     // Authentication and Authorization
     // "orgid_auth" method is allowed only
-    if (schema.security &&
-      Array.isArray(schema.security) &&
-      schema.security.length > 0) {
-      const authScopeSchema = getDeepValue(schema, 'security.orgid_auth');
+    const authSchema = getDeepValue(
+      schema,
+      `${requestMethod}.security`
+    );
+    if (authSchema && Array.isArray(authSchema) && authSchema.length > 0) {
 
       // Verify function scope configuration
       if (!authScope || !Array.isArray(authScope)) {
@@ -55,6 +66,17 @@ const functionDecorator = (
           INTERNAL_SERVER_ERROR
         );
       }
+
+      // Extract auth scope from security schema
+      const authScopeSchema = authSchema.reduce(
+        (a, v) => {
+          if (v['orgid_auth']) {
+            a = v['orgid_auth'];
+          }
+          return a;
+        },
+        []
+      );
 
       // Checking if the function can be executed in the current scope
       if (authScopeSchema.filter(s => authScope.includes(s)).length === 0) {
@@ -66,16 +88,6 @@ const functionDecorator = (
 
       // Authenticate the request
       await isAuthorized(req, authScope);
-    }
-
-    const requestMethod = req.method.toLowerCase();
-
-    // HTTP Request method validation
-    if (!Object.keys(schema).includes(requestMethod)) {
-      throw new GliderError(
-        'Method not allowed',
-        METHOD_NOT_ALLOWED
-      );
     }
 
     // Request parameters validation

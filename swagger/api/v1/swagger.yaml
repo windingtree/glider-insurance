@@ -15,7 +15,7 @@ servers:
     description: API server
 
 tags:
-  - offers:
+  - name: offers
     description: Search for insurance policies offers
   - name: service
     description: API service functions
@@ -42,7 +42,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Pong"
+                $ref: "#/components/schemas/SearchResults"
         400:
           description: Bad Request
           content:
@@ -94,7 +94,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Offers"
+                $ref: "#/components/schemas/Pong"
 
     post:
       tags:
@@ -117,8 +117,46 @@ paths:
 
 components:
   schemas:
+    SearchCriteria:
+      description: Insurance policies offers search criteria
+      type: object
+      required:
+        - query
+      properties:
+        query:
+          description: Search query
+          type: string
+          example: test
+
+    SearchResults:
+      description: Array of offers
+      type: object
+      required:
+        - offers
+      properties:
+        offers:
+          type: array
+          items:
+            $ref: "#/components/schemas/Offer"
+
+    Offer:
+      description: Insurance policy offer
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+
+    UUID:
+      description: Unique identifier for Offers and Orders
+      type: string
+      format: uuid
+      minLength: 36
+      maxLength: 36
+      pattern: "^[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}$"
+      example: "11111111-2222-3333-4444-000000000001"
+
     Error:
-      description: Objet describing an error
+      description: Object describing an error
       type: object
       required:
         - message
@@ -160,3 +198,15 @@ components:
           type: string
           format: date-time
           example: 2021-04-14T23:20:50.52Z
+
+  securitySchemes:
+    orgid_auth:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: https://staging.api.simard.io/oauth/authorize
+          scopes:
+            write:orders: modify orders in your account
+            read:orders: read your orders
+            write:offers: modify offers in your account
+            read:offers: read your offers
