@@ -15,10 +15,65 @@ servers:
     description: API server
 
 tags:
+  - offers:
+    description: Search for insurance policies offers
   - name: service
     description: API service functions
 
 paths:
+  /offers/search:
+    post:
+      tags:
+        - offers
+      summary: Offers Search
+      operationId: offersSearch
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SearchCriteria"
+      security:
+        - orgid_auth:
+            - read:offers
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Pong"
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          description: Authorization required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        405:
+          description: Method Not Allowed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          description: Internal Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
   /service/ping:
     get:
       tags:
@@ -32,13 +87,15 @@ paths:
           schema:
             type: string
           example: Ping
+      security: []
       responses:
         200:
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Pong"
+                $ref: "#/components/schemas/Offers"
+
     post:
       tags:
         - service
@@ -49,6 +106,7 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/PingRequest"
+      security: []
       responses:
         200:
           description: OK
@@ -59,6 +117,23 @@ paths:
 
 components:
   schemas:
+    Error:
+      description: Objet describing an error
+      type: object
+      required:
+        - message
+        - code
+      properties:
+        message:
+          description: Error message
+          type: string
+          example: "Something went wrong"
+        code:
+          description: Error code
+          type: string
+          pattern: "^[0-9A-Z]+$"
+          example: "BAD_REQUEST"
+
     PingRequest:
       description: Request options for Ping
       type: object

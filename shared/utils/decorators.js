@@ -11,19 +11,25 @@ const {
   }
 } = require('../constants');
 const { getDeepValue } = require('../utils/object');
+const { isAuthorized } = require('../utils/auth');
 const { validateWithSchemaOrRef } = require('../utils/validators');
 
 // Decorate serverless function with support for:
 // - error handling
 // - request method validation
 // - request (parameters and body object) and response data validation against the schema
-// - authentication ability
+// - authentication and authorization ability
 const functionDecorator = (
   func,
   apiVersion,
   apiPath,
+  authScope = []
 ) => async (req, res) => {
   try {
+    // start timer
+    req.start = process.hrtime();
+
+    // Fetch swagger schema
     const swaggerJson = require(`../../public/${apiVersion}/swagger.json`);
     const schema = getDeepValue(swaggerJson, `paths.${apiPath}`);
 
@@ -35,9 +41,36 @@ const functionDecorator = (
       );
     }
 
+    // Authentication and Authorization
+    // "orgid_auth" method is allowed only
+    if (schema.security &&
+      Array.isArray(schema.security) &&
+      schema.security.length > 0) {
+      const authScopeSchema = getDeepValue(schema, 'security.orgid_auth');
+
+      // Verify function scope configuration
+      if (!authScope || !Array.isArray(authScope)) {
+        throw new GliderError(
+          'Function authentication scope not defined',
+          INTERNAL_SERVER_ERROR
+        );
+      }
+
+      // Checking if the function can be executed in the current scope
+      if (authScopeSchema.filter(s => authScope.includes(s)).length === 0) {
+        throw new GliderError(
+          `Function cannot be executed in scope: ${JSON.stringify(authScopeSchema)}`,
+          INTERNAL_SERVER_ERROR
+        );
+      }
+
+      // Authenticate the request
+      await isAuthorized(req, authScope);
+    }
+
     const requestMethod = req.method.toLowerCase();
 
-    // Request HTTP method validation
+    // HTTP Request method validation
     if (!Object.keys(schema).includes(requestMethod)) {
       throw new GliderError(
         'Method not allowed',
@@ -46,17 +79,19 @@ const functionDecorator = (
     }
 
     // Request parameters validation
-    const requestParameters = req.query;
     const requestParametersSchema = getDeepValue(
       schema,
       `${requestMethod}.parameters`
     );
 
     if (requestParametersSchema && Array.isArray(requestParametersSchema)) {
+      const requestParameters = req.query;
+
       // Iterate through parameters schema
       for (const parameter of requestParametersSchema) {
         const parameterValue = requestParameters[parameter.name];
         const isRequired = parameter.required;
+
         if (parameterValue) {
           const requestModelRef = parameter.schema;
           const requestValidationResult = validateWithSchemaOrRef(
@@ -80,21 +115,30 @@ const functionDecorator = (
     }
 
     // Request body validation
-    const requestBody = req.body;
     const requestBodySchema = getDeepValue(
       schema,
       `${requestMethod}.requestBody.content.application/json.schema.$ref`
     );
 
     if (requestBodySchema) {
-      const requestBodyValidationResult = validateWithSchemaOrRef(
-        swaggerJson,
-        requestBodySchema,
-        requestBody
-      );
-      if (requestBodyValidationResult !== null) {
+      const requestBody = req.body;
+      const isRequired = requestBodySchema.required;
+
+      if (requestBody && typeof requestBody === 'object') {
+        const requestBodyValidationResult = validateWithSchemaOrRef(
+          swaggerJson,
+          requestBodySchema,
+          requestBody
+        );
+        if (requestBodyValidationResult !== null) {
+          throw new GliderError(
+            `Request validation error: ${requestBodyValidationResult}`,
+            BAD_REQUEST
+          );
+        }
+      } else if (!requestBody && isRequired) {
         throw new GliderError(
-          `Request validation error: ${requestBodyValidationResult}`,
+          'Request body is required',
           BAD_REQUEST
         );
       }

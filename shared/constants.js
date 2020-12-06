@@ -25,3 +25,6 @@ module.exports.HTTP_STATUS_CODES = {
   BAD_GATEWAY: 502,
   SERVICE_UNAVAILABLE: 503,
 };
+
+// Ethereum zero address
+module.exports.zeroAddress = '0x0000000000000000000000000000000000000000';

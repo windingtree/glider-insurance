@@ -47,5 +47,8 @@
       "destination": "/api/doc/v1"
     }
   ],
-  "env": {}
+  "env": {
+    "DEFAULT_NETWORK": "@default_network",
+    "INFURA_URI": "@infura_uri"
+  }
 }
