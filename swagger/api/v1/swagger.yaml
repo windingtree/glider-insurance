@@ -102,6 +102,7 @@ paths:
       summary: Ping-pong using POST
       operationId: servicePingPost
       requestBody:
+        required: true
         content:
           application/json:
             schema:
@@ -201,12 +202,6 @@ components:
 
   securitySchemes:
     orgid_auth:
-      type: oauth2
-      flows:
-        implicit:
-          authorizationUrl: https://staging.api.simard.io/oauth/authorize
-          scopes:
-            write:orders: modify orders in your account
-            read:orders: read your orders
-            write:offers: modify offers in your account
-            read:offers: read your offers
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

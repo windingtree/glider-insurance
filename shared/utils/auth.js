@@ -1,6 +1,5 @@
 const { JWK, JWT } = require('jose');
 const Web3 = require('web3');
-const ethers = require('ethers');
 const {
   OrgIdResolver,
   httpFetchMethod
@@ -10,7 +9,6 @@ const {
 } = require('@windingtree/org.id');
 const GliderError = require('../error');
 const {
-  zeroAddress,
   HTTP_STATUS: {
     FORBIDDEN,
     UNAUTHORIZED,
@@ -61,13 +59,26 @@ const verifyJWT = async (type, jwt) => {
   // Extract token content
   const { payload: { exp, aud, iss, sub } } = decodedToken;
 
+  // Parse subject
+  const subject = sub.match(/^\[[\w"].*\]$/g)
+    ? JSON.parse(sub)
+    : sub.split(',');
+
   // Issuer should be defined
   if (!iss || iss === '') {
-    throw new GliderError('JWT is missing issuing ORG.ID', FORBIDDEN);
+    throw new GliderError('JWT is missing issuing ORGiD', FORBIDDEN);
   }
 
   // Extract DID of the issuer
-  const { did, fragment } = iss.match(/(?<did>did:orgid:0x\w{64})(?:#{1})?(?<fragment>\w+)?/).groups;
+  const isIssuerWellFormed = iss.match(/(?<did>did:orgid:0x\w{64})(?:#{1})?(?<fragment>\w+)?/);
+
+  if (!isIssuerWellFormed) {
+    throw new GliderError(
+      'The issuer of the JWT not well-formed',
+      FORBIDDEN
+    );
+  }
+  const { did, fragment } = isIssuerWellFormed.groups;
 
   // Resolve DID
   const didResult = await orgIdResolver.resolve(did);
@@ -89,39 +100,7 @@ const verifyJWT = async (type, jwt) => {
     );
   }
 
-  if (!fragment) {
-    // Validate signature (ethereum) of the organization owner or director
-
-    const lastPeriod = jwt.lastIndexOf('.');
-    const jwtMessage = jwt.substring(0, lastPeriod);
-    let rawSign = decodedToken.signature
-      .toString()
-      .replace('-', '+')
-      .replace('_', '/');
-
-    const signatureB16 = Buffer
-      .from(
-        rawSign,
-        'base64'
-      )
-      .toString('hex');
-
-    const hashedMessage = ethers.utils.hashMessage(jwtMessage);
-    const signingAddress = ethers.utils.recoverAddress(hashedMessage, `0x${signatureB16}`);
-
-    // Signer address should be an owner address or director address
-    // and director have to be confirmed
-    if (![
-      didResult.organization.owner,
-      ...(didResult.organization.director !== zeroAddress
-          && didResult.organization.isDirectorshipAccepted
-        ? [didResult.organization.director]
-        : [])
-    ].includes(signingAddress)) {
-      throw new GliderError('JWT Token is signed by unknown key', FORBIDDEN);
-    }
-
-  } else if (fragment && didResult.didDocument.publicKey) {
+  if (fragment) {
     // Validate signature using publicKey
 
     let publicKey = didResult.didDocument.publicKey.filter(
@@ -142,7 +121,6 @@ const verifyJWT = async (type, jwt) => {
       case 'secp256k1':
         alg = 'ES256K';
         break;
-
       default:
         throw new GliderError(
           `'${publicKey.type}' signature not supported yet`,
@@ -168,7 +146,8 @@ const verifyJWT = async (type, jwt) => {
         pubKey,
         {
           typ: 'JWT',
-          audience: PROVIDERS_DIDS
+          audience: PROVIDERS_DIDS,
+          clockTolerance: '1 min'
         }
       );
     } catch (error) {
@@ -179,11 +158,7 @@ const verifyJWT = async (type, jwt) => {
           break;
         case 'ERR_JWT_CLAIM_INVALID':
           if (error.claim === 'aud') {
-            error.message = 'JWT recipient is not Glider';
-          }
-          // Raised only in case of Admin
-          else if (error.claim === 'iss') {
-            error.message = 'JWT must be created by a Glider authorized agent';
+            error.message = 'JWT recipient is not an insurance provider';
           }
           break;
         case 'ERR_JWS_VERIFICATION_FAILED':
@@ -198,7 +173,7 @@ const verifyJWT = async (type, jwt) => {
   } else {
     throw new GliderError(
       'Signature verification method not found',
-      403
+      FORBIDDEN
     );
   }
 
@@ -206,7 +181,7 @@ const verifyJWT = async (type, jwt) => {
     aud,
     iss,
     exp,
-    sub,
+    sub: subject,
     didResult
   }
 };
@@ -233,3 +208,34 @@ module.exports.isAuthorized = async (req, scope) => {
     );
   }
 };
+
+// Creates a JWT signed by the provided private key
+module.exports.createToken = (
+  privPem,
+  issuer,
+  fragment,
+  audience,
+  subject,
+  expiresIn
+) => {
+  const priv = JWK.asKey(
+    privPem,
+    {
+      alg: 'ES256K',
+      use: 'sig'
+    }
+  );
+
+  return JWT.sign(
+    {},
+    priv,
+    {
+      audience,
+      ...(issuer ? { issuer: `${issuer}${fragment ? '#' + fragment : ''}` } : {}),
+      expiresIn,
+      subject,
+      kid: false,
+      header: { typ: 'JWT' }
+    }
+  );
+}
