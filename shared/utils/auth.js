@@ -198,12 +198,12 @@ module.exports.isAuthorized = async (req, scope) => {
   }
 
   const [ authType, jwt ] = headers.authorization.split(' ');
-  req.verificationResult = await verifyJWT(authType, jwt);
+  req.auth = await verifyJWT(authType, jwt);
 
   // Checking the requester ability execute the function in its scope
-  if (req.verificationResult.sub.filter(s => scope.includes(s)).length === 0) {
+  if (req.auth.sub.filter(s => scope.includes(s)).length === 0) {
     throw new GliderError(
-      'Authorization missing',
+      `Not authorized to make requests in the scope: ${JSON.stringify(scope)}`,
       UNAUTHORIZED
     );
   }

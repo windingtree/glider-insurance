@@ -81,7 +81,7 @@ const functionDecorator = (
       // Checking if the function can be executed in the current scope
       if (authScopeSchema.filter(s => authScope.includes(s)).length === 0) {
         throw new GliderError(
-          `Function cannot be executed in scope: ${JSON.stringify(authScopeSchema)}`,
+          `Function cannot be executed in the scope: ${JSON.stringify(authScopeSchema)}`,
           INTERNAL_SERVER_ERROR
         );
       }
@@ -127,14 +127,18 @@ const functionDecorator = (
     }
 
     // Request body validation
+    const requestSchema = getDeepValue(
+      schema,
+      `${requestMethod}.requestBody`
+    );
     const requestBodySchema = getDeepValue(
       schema,
       `${requestMethod}.requestBody.content.application/json.schema.$ref`
     );
 
-    if (requestBodySchema) {
+    if (requestSchema && requestBodySchema) {
       const requestBody = req.body;
-      const isRequired = requestBodySchema.required;
+      const isRequired = requestSchema.required;
 
       if (requestBody && typeof requestBody === 'object') {
         const requestBodyValidationResult = validateWithSchemaOrRef(

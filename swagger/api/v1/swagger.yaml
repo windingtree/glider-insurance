@@ -102,7 +102,6 @@ paths:
       summary: Ping-pong using POST
       operationId: servicePingPost
       requestBody:
-        required: true
         content:
           application/json:
             schema:
