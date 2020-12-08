@@ -1,0 +1,58 @@
+{
+  "version": 2,
+  "name": "glider-insurance",
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build"
+    },
+    {
+      "src": "api/v1/**/*.js",
+      "use": "@vercel/node"
+    },
+    {
+        "src": "/public/**",
+        "use": "@vercel/static"
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/doc/(.*)",
+      "destination": "/public/$1"
+    },
+    {
+      "source": "/api/v1/offers/search",
+      "destination": "/api/v1/offers/search.js"
+    },
+    {
+      "source": "/api/v1/service/ping",
+      "destination": "/api/v1/service/ping.js"
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/api/doc/v1"
+    },
+    {
+      "source": "/api",
+      "destination": "/api/doc/v1"
+    },
+    {
+      "source": "/api/",
+      "destination": "/api/doc/v1"
+    },
+    {
+      "source": "/api/doc/",
+      "destination": "/api/doc/v1"
+    },
+    {
+      "source": "/api/doc",
+      "destination": "/api/doc/v1"
+    }
+  ],
+  "env": {
+    "DEFAULT_NETWORK": "@default_network",
+    "INFURA_URI": "@infura_uri"
+  }
+}

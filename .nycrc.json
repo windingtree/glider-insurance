@@ -1,0 +1,14 @@
+{
+  "all": true,
+  "extension": [
+    ".js"
+  ],
+  "include": [
+    "api/**",
+    "providers/**",
+    "shared/**"
+  ],
+  "exclude": [
+    "node_modules/**"
+  ]
+}

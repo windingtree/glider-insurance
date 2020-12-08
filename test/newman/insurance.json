@@ -1,0 +1,344 @@
+{
+	"info": {
+		"_postman_id": "0a350b38-1d69-4284-aa07-248040c2bbce",
+		"name": "Glider Insurance API tests",
+		"description": "Automated tests for the Glider Insurance",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Offers",
+			"item": [
+				{
+					"name": "Search POST",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "24ca2e0e-129c-48d1-b2db-d86f56033e0d",
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    pm.response.to.have.status(200);",
+									"    pm.response.to.be.withBody;",
+									"    pm.response.to.be.json;",
+									"});",
+									"const offersResponse = pm.response.json();",
+									"const {",
+									"    offers",
+									"} = offersResponse;",
+									"",
+									"pm.test(\"Proper offers response\", () => {",
+									"    pm.expect(offers).to.be.an('array');",
+									"    offers.forEach(o => {",
+									"        pm.expect(o.id).to.match(new RegExp(pm.variables.MATCH_UUID));",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{AUTH_TOKEN}}",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "{{AUTH_TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{API_URL}}/api/v1/offers/search",
+							"host": [
+								"{{API_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"offers",
+								"search"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Services",
+			"item": [
+				{
+					"name": "Ping GET",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "4ca23848-2220-4c7d-bf81-bba79c87f9be",
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    pm.response.to.have.status(200);",
+									"    pm.response.to.be.withBody;",
+									"    pm.response.to.be.json;",
+									"});",
+									"const pingResponse = pm.response.json();",
+									"",
+									"pm.test(\"Proper response\", () => {",
+									"    pm.expect(pingResponse.message).to.eq('Pong');",
+									"    pm.expect(pingResponse.date).to.match(new RegExp(pm.variables.MATCH_ISO_DATE));",
+									"});",
+									"",
+									"// Stop execution if there is an error",
+									"if (pm.response.status !== \"OK\") {",
+									"    postman.setNextRequest(null);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_URL}}/api/v1/service/ping",
+							"host": [
+								"{{API_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"service",
+								"ping"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Ping GET with message",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "74568d43-c809-4743-978f-9290015fc9dd",
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    pm.response.to.have.status(200);",
+									"    pm.response.to.be.withBody;",
+									"    pm.response.to.be.json;",
+									"});",
+									"const pingResponse = pm.response.json();",
+									"",
+									"pm.test(\"Proper response\", () => {",
+									"    pm.expect(pingResponse.message).to.eq('Pong');",
+									"    pm.expect(pingResponse.date).to.match(new RegExp(pm.variables.MATCH_ISO_DATE));",
+									"});",
+									"",
+									"// Stop execution if there is an error",
+									"if (pm.response.status !== \"OK\") {",
+									"    postman.setNextRequest(null);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_URL}}/api/v1/service/ping?message=Ping",
+							"host": [
+								"{{API_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"service",
+								"ping"
+							],
+							"query": [
+								{
+									"key": "message",
+									"value": "Ping"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Ping POST",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "16e1aef1-213b-41e5-b713-28f80121f65e",
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    pm.response.to.have.status(200);",
+									"    pm.response.to.be.withBody;",
+									"    pm.response.to.be.json;",
+									"});",
+									"const pingResponse = pm.response.json();",
+									"",
+									"pm.test(\"Proper response\", () => {",
+									"    pm.expect(pingResponse.message).to.eq('Pong');",
+									"    pm.expect(pingResponse.date).to.match(new RegExp(pm.variables.MATCH_ISO_DATE));",
+									"});",
+									"",
+									"// Stop execution if there is an error",
+									"if (pm.response.status !== \"OK\") {",
+									"    postman.setNextRequest(null);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"message\": \"Ping\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_URL}}/api/v1/service/ping",
+							"host": [
+								"{{API_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"service",
+								"ping"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Ping POST wrong request",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2ea73f71-e59c-4bb5-b714-356dad69c653",
+								"exec": [
+									"pm.test(\"Status code is 400\", () => {",
+									"    pm.response.to.have.status(400);",
+									"    pm.response.to.be.withBody;",
+									"    pm.response.to.be.json;",
+									"});",
+									"const pingResponse = pm.response.json();",
+									"",
+									"pm.test(\"Proper error message\", () => {",
+									"    pm.expect(pingResponse.message).to.eq('Request validation error: data should have required property \\'message\\'');",
+									"    pm.expect(pingResponse.code).to.eq('BAD_REQUEST')",
+									"});",
+									"",
+									"// Stop execution if there is an error",
+									"if (pm.response.status !== \"OK\") {",
+									"    postman.setNextRequest(null);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"unknown\": \"Ping\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_URL}}/api/v1/service/ping",
+							"host": [
+								"{{API_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"service",
+								"ping"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "cb207f4c-2ce3-4142-a427-ea9570efd64a",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "adc425d0-1a33-4b2d-a85d-ddad07a5751f",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "d39ee640-d955-4421-a13d-577695795d38",
+			"key": "API_URL",
+			"value": "http://localhost:3000"
+		},
+		{
+			"id": "7819f580-d506-419a-9388-e1085aea7377",
+			"key": "AUTH_TOKEN",
+			"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJzdWIiOiJbXCJyZWFkOm9mZmVyc1wiXSIsImF1ZCI6ImRpZDpvcmdpZDoweDI1M2IyMjQxYzhhYjdjNGFmN2NmOTk4ZmViMD..."
+		},
+		{
+			"id": "22625c2b-bf80-4fc9-a01d-a7505ddeca29",
+			"key": "MATCH_UUID",
+			"value": "/[0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12}/g"
+		},
+		{
+			"id": "38e74bae-e672-42d5-b7b7-646c35d88e38",
+			"key": "MATCH_ISO_DATE",
+			"value": "/\\d{4}-[01]\\d-[0-3]\\dT[0-2]\\d:[0-5]\\d:[0-5]\\d\\.\\d+([+-][0-2]\\d:[0-5]\\d|Z)/"
+		}
+	],
+	"protocolProfileBehavior": {}
+}
