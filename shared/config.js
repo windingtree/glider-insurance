@@ -1,5 +1,22 @@
 module.exports.INFURA_URI = process.env.INFURA_URI;
 module.exports.DEFAULT_NETWORK = process.env.DEFAULT_NETWORK;
-module.exports.PROVIDERS_DIDS = [
-  process.env.EKTA_DID
-];
+const PROVIDERS = {
+  [process.env.EKTA_DID]: {
+    name: 'ekta',
+    token: process.env.EKTA_TOKEN,
+    baseUrl: process.env.EKTA_BASE_URL
+  }
+};
+module.exports.PROVIDERS = PROVIDERS;
+
+// Extract config of the provider by the name
+module.exports.getProviderConfig = name => Object.entries(PROVIDERS)
+  .reduce(
+    (a, v) => {
+      if (v[1].name === name) {
+        a = v[1];
+      }
+      return a;
+    },
+    {}
+  );

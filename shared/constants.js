@@ -26,5 +26,13 @@ module.exports.HTTP_STATUS_CODES = {
   SERVICE_UNAVAILABLE: 503,
 };
 
+// HTTP methods
+module.exports.HTTP_METHODS = {
+  GET: 'GET',
+  POST: 'POST',
+  PUT: 'PUT',
+  DELETE: 'DELETE'
+};
+
 // Ethereum zero address
 module.exports.zeroAddress = '0x0000000000000000000000000000000000000000';

@@ -18,7 +18,7 @@ const {
 const {
   INFURA_URI,
   DEFAULT_NETWORK,
-  PROVIDERS_DIDS
+  PROVIDERS
 } = require('../config');
 const { toChecksObject } = require('../utils/object');
 
@@ -66,7 +66,10 @@ const verifyJWT = async (type, jwt) => {
 
   // Issuer should be defined
   if (!iss || iss === '') {
-    throw new GliderError('JWT is missing issuing ORGiD', FORBIDDEN);
+    throw new GliderError(
+      'JWT is missing issuing ORGiD',
+      FORBIDDEN
+    );
   }
 
   // Extract DID of the issuer
@@ -146,7 +149,7 @@ const verifyJWT = async (type, jwt) => {
         pubKey,
         {
           typ: 'JWT',
-          audience: PROVIDERS_DIDS,
+          audience: Object.keys(PROVIDERS), // List of DIDs
           clockTolerance: '1 min'
         }
       );
@@ -199,6 +202,18 @@ module.exports.isAuthorized = async (req, scope) => {
 
   const [ authType, jwt ] = headers.authorization.split(' ');
   req.auth = await verifyJWT(authType, jwt);
+
+  // Set a type of provider for the request
+  req.provider = PROVIDERS[req.auth.aud]
+    ? PROVIDERS[req.auth.aud].name
+    : undefined;
+
+  if (!req.provider) {
+    throw new GliderError(
+      'Unknown insurance provider',
+      FORBIDDEN
+    );
+  }
 
   // Checking the requester ability execute the function in its scope
   if (req.auth.sub.filter(s => scope.includes(s)).length === 0) {

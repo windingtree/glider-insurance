@@ -1,16 +1,23 @@
-const { v4: uuidv4 } = require('uuid');
 const { functionDecorator } = require('../../../shared/utils/decorators');
-// const GliderError = require('../../../shared/error');
+const GliderError = require('../../../shared/error');
+const {
+  HTTP_STATUS: {
+    INTERNAL_SERVER_ERROR
+  }
+} = require('../../../shared/constants');
+const searchOffers = require('../../../providers/ekta/offres/search');
 
-const search = async () => {
+const search = async req => {
 
-  return {
-    offers: [
-      {
-        id: uuidv4()
-      }
-    ]
-  };
+  switch (req.provider) {
+    case 'ekta':
+      return searchOffers(req);
+    default:
+      throw new GliderError(
+        'Unknown provider',
+        INTERNAL_SERVER_ERROR
+      );
+  }
 };
 
 module.exports = functionDecorator(
