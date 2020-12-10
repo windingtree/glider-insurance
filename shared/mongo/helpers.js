@@ -4,7 +4,7 @@ const connection = require('./connection');
 const createExpireIndex = async (collection, indexName, indexFieldName, ttl) => {
   const db = await connection();
   return db.collection(collection)
-    .ensureIndex(
+    .createIndex(
       {
         [indexFieldName]: 1
       },
@@ -48,7 +48,7 @@ const insertOne = async (collection, document, options) => {
     .insertOne(
       {
         ...document,
-        updatedAt: Date.now()
+        updatedAt: new Date()
       },
       options
     );
@@ -62,7 +62,7 @@ const insertMany = async (collection, documents, options) => {
     .insertMany(
       documents.map(d => ({
         ...d,
-        updatedAt: Date.now()
+        updatedAt: new Date()
       })),
       {
         ordered: true,
@@ -83,7 +83,7 @@ const updateOne = async (collection, filter, document, options) => {
       {
         $set: {
           ...document,
-          updatedAt: Date.now()
+          updatedAt: new Date()
         }
       },
       options

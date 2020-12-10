@@ -148,6 +148,7 @@ components:
           description: Sum insured
           type: number
           enum:
+            - 3000
             - 30000
             - 50000
           example: 30000
@@ -194,9 +195,9 @@ components:
             - ua # Ukrainian
             - en # English
           example: en
-        programm_id:
+        program_id:
           description: The name of the program
-          type: string
+          $ref: "#/components/schemas/InsuranceProgramId"
 
     SearchResults:
       description: Array of offers
@@ -212,11 +213,10 @@ components:
     Offer:
       description: Insurance policy offer
       type: object
-      require:
+      required:
         - offerId
         - id
         - cost
-        - code
         - name
         - desc
         - currency
@@ -226,8 +226,8 @@ components:
           $ref: "#/components/schemas/UUID"
         id:
           description: Program Id
-          type: string
-          example: standard
+          $ref: "#/components/schemas/InsuranceProgramId"
+          example: sub_standart_vzr
         cost:
           description: Insurance payment
           type: number
@@ -247,6 +247,18 @@ components:
         currency:
           description: Currency in which currency is valued
           $ref: "#/components/schemas/Currency"
+        covid_inc:
+          description: Is COVID case included into the insurance
+          type: boolean
+          example: true
+
+    InsuranceProgramId:
+      description: The name of the program
+      type: string
+      enum:
+        - cpa_vzr_standart # 3000 EUR
+        - sub_standart_vzr # 30000 EUR
+        - sub_premium_vzr  # 50000 USD
 
     Tourist:
       description: Tourist personal data

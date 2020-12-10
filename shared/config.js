@@ -1,10 +1,13 @@
 module.exports.INFURA_URI = process.env.INFURA_URI;
 module.exports.DEFAULT_NETWORK = process.env.DEFAULT_NETWORK;
 const PROVIDERS = {
-  [process.env.EKTA_DID]: {
+  [process.env.PROVIDER_EKTA_DID]: {
     name: 'ekta',
-    token: process.env.EKTA_TOKEN,
-    baseUrl: process.env.EKTA_BASE_URL
+    auth: {
+      client_id: process.env.PROVIDER_EKTA_API_ID,
+      client_pass: process.env.PROVIDER_EKTA_API_PASSWORD
+    },
+    baseUrl: process.env.PROVIDER_EKTA_BASE_URL
   }
 };
 module.exports.PROVIDERS = PROVIDERS;

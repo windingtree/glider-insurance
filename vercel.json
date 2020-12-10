@@ -52,7 +52,13 @@
     }
   ],
   "env": {
+    "MONGO_URL": "@mongo_url",
+    "MONGO_DB_NAME": "@mongo_db_name",
     "DEFAULT_NETWORK": "@default_network",
-    "INFURA_URI": "@infura_uri"
+    "INFURA_URI": "@infura_uri",
+    "PROVIDER_EKTA_DID": "@provider_ekta_did",
+    "PROVIDER_EKTA_BASE_URL": "@provider_ekta_base_url",
+    "PROVIDER_EKTA_API_ID": "@provider_ekta_api_id",
+    "PROVIDER_EKTA_API_PASSWORD": "@provider_ekta_api_password"
   }
 }

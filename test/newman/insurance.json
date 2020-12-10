@@ -26,11 +26,33 @@
 									"const {",
 									"    offers",
 									"} = offersResponse;",
+									"const programIds = [",
+									"    'cpa_vzr_standart',",
+									"    'sub_standart_vzr',",
+									"    'sub_premium_vzr'",
+									"]",
 									"",
 									"pm.test(\"Proper offers response\", () => {",
 									"    pm.expect(offers).to.be.an('array');",
 									"    offers.forEach(o => {",
-									"        pm.expect(o.id).to.match(new RegExp(pm.variables.MATCH_UUID));",
+									"        const {",
+									"            offerId,",
+									"            id,",
+									"            cost,",
+									"            code,",
+									"            name,",
+									"            desc,",
+									"            currency",
+									"        } = o;",
+									"        pm.expect(offerId).to.match(new RegExp(pm.variables.MATCH_UUID));",
+									"        pm.expect(id).to.be.oneOf(programIds);",
+									"        pm.expect(cost).to.be.a('number');",
+									"        if (code) {",
+									"            pm.expect(code).to.be.a('number');",
+									"        }",
+									"        pm.expect(name).to.be.a('string');",
+									"        pm.expect(desc).to.be.a('string');",
+									"        pm.expect(currency).to.be.a('string');",
 									"    });",
 									"});"
 								],
@@ -56,6 +78,15 @@
 						},
 						"method": "POST",
 						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"territory\": \"global\",\n  \"insurance_limit\": 30000,\n  \"insurance_limit_currency\": \"EUR\",\n  \"type\": \"single\",\n  \"single_period_from\": \"2020-11-21\",\n  \"single_period_till\": \"2020-11-21\",\n  \"tourists\": [\n    {\n      \"name_first\": \"Petro\",\n      \"name_last\": \"Petrovsky\",\n      \"phone\": \"+32123456789\",\n      \"city\": \"Odesa\",\n      \"address\": \"Myasoedovskaya str.\",\n      \"build\": 8,\n      \"email\": \"contact@org.co.uk\",\n      \"birthday\": \"2020-11-21\",\n      \"passport\": \"FE 123456\"\n    }\n  ],\n  \"target\": \"tourism\",\n  \"citizenship\": \"Turkey\",\n  \"price_currency\": \"EUR\",\n  \"lang\": \"en\",\n  \"programm_id\": \"string\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
 							"raw": "{{API_URL}}/api/v1/offers/search",
 							"host": [
@@ -320,22 +351,22 @@
 	],
 	"variable": [
 		{
-			"id": "d39ee640-d955-4421-a13d-577695795d38",
+			"id": "73534aab-acf9-461d-ac53-ddae011bdefe",
 			"key": "API_URL",
 			"value": "http://localhost:3000"
 		},
 		{
-			"id": "7819f580-d506-419a-9388-e1085aea7377",
+			"id": "5e4963f0-e435-4f3f-bb48-fa20fa27fb85",
 			"key": "AUTH_TOKEN",
 			"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJzdWIiOiJbXCJyZWFkOm9mZmVyc1wiXSIsImF1ZCI6ImRpZDpvcmdpZDoweDI1M2IyMjQxYzhhYjdjNGFmN2NmOTk4ZmViMD..."
 		},
 		{
-			"id": "22625c2b-bf80-4fc9-a01d-a7505ddeca29",
+			"id": "7190aa4e-2e5e-4780-9a81-50ad1bbe4297",
 			"key": "MATCH_UUID",
 			"value": "/[0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12}/g"
 		},
 		{
-			"id": "38e74bae-e672-42d5-b7b7-646c35d88e38",
+			"id": "cda425dc-db45-4297-af48-28fd6778cff4",
 			"key": "MATCH_ISO_DATE",
 			"value": "/\\d{4}-[01]\\d-[0-3]\\dT[0-2]\\d:[0-5]\\d:[0-5]\\d\\.\\d+([+-][0-2]\\d:[0-5]\\d|Z)/"
 		}

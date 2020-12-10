@@ -19,11 +19,9 @@ module.exports = async () => {
     connectionPromise = MongoClient.connect(
       MONGO_URL,
       {
-        bufferCommands: false,
         bufferMaxEntries: 0,
         useNewUrlParser: true,
-        useUnifiedTopology: true,
-        useCreateIndex: true
+        useUnifiedTopology: true
       }
     );
   }

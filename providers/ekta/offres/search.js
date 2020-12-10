@@ -33,5 +33,7 @@ module.exports = async req => {
 
   await saveOffers(offers);
 
-  return offers;
+  return {
+    offers
+  };
 };
