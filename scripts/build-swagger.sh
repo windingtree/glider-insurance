@@ -3,15 +3,13 @@
 API_DOC_FOLDER="./public"
 VERSIONS=( "v1" )
 
-rm -rf $API_DOC_FOLDER/*
-mkdir -p $API_DOC_FOLDER
-
 # Build docs for all API versions
 for version in "${VERSIONS[@]}"
 do
   echo "Building schema for API $version"
+  rm -rf $API_DOC_FOLDER/$version
   mkdir -p $API_DOC_FOLDER/$version
-  cp ./swagger/src/* $API_DOC_FOLDER/$version
+  cp -r ./swagger/src/* $API_DOC_FOLDER/$version
   cp -r ./swagger/api/$version/* $API_DOC_FOLDER/$version
   API_DOC_URL=/api/doc/$version
   API_VERSION_URL=/api/$version
@@ -22,5 +20,5 @@ do
   npx js-yaml $API_DOC_FOLDER/$version/swagger.yaml > $API_DOC_FOLDER/$version/swagger.json
 done
 
-echo "Swagger schamas are built!"
+echo "Swagger schemas are built!"
 exit 0

@@ -27,7 +27,7 @@ coverage
 
 # Compiled files
 build/Release
-public
+public/v*/**
 
 # Dependency directories
 node_modules/
