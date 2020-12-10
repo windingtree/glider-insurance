@@ -8,9 +8,9 @@ for version in "${VERSIONS[@]}"
 do
   echo "Building schema for API $version"
   mkdir -p $API_DOC_FOLDER/$version
-  cp -r ./swagger/src/* $API_DOC_FOLDER/$version
+  cp -r ./swagger/src/* "$API_DOC_FOLDER/$version"
   echo "Swagger UI index file copied to the $API_DOC_FOLDER/$version"
-  cp -r ./swagger/api/$version/* $API_DOC_FOLDER/$version
+  cp -r ./swagger/api/$version/* "$API_DOC_FOLDER/$version"
   echo "Swagger schema files are copied to the $API_DOC_FOLDER/$version"
   API_DOC_URL_ESC=$(printf '%s\n' "/api/doc/$version" | sed -e 's/[]\/$*.^[]/\\&/g')
   API_VERSION_URL_ESC=$(printf '%s\n' "/api/$version" | sed -e 's/[]\/$*.^[]/\\&/g')
