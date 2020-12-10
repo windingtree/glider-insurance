@@ -4,10 +4,7 @@
   "builds": [
     {
       "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "outputDirectory": "public"
-      }
+      "use": "@vercel/static-build"
     },
     {
       "src": "public/**",
@@ -25,7 +22,7 @@
   "rewrites": [
     {
       "source": "/api/doc/(.*)",
-      "destination": "/public/$1"
+      "destination": "/public/api/doc/$1"
     }
   ],
   "redirects": [

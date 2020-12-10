@@ -1,0 +1,523 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Glider Insurance",
+    "description": "Multi-tenant bridge for insurance providers on Winding Tree marketplace",
+    "contact": {
+      "email": "dev@windingtree.com"
+    },
+    "license": {
+      "name": "GNU GENERAL PUBLIC LICENSE",
+      "url": "https://www.gnu.org/licenses/gpl-3.0.html"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "/api/v1",
+      "description": "API server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "offers",
+      "description": "Search for insurance policies offers"
+    },
+    {
+      "name": "service",
+      "description": "API service functions"
+    }
+  ],
+  "paths": {
+    "/offers/search": {
+      "post": {
+        "tags": [
+          "offers"
+        ],
+        "summary": "Offers Search",
+        "operationId": "offersSearch",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SearchCriteria"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "orgid_auth": [
+              "read:offers"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchResults"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authorization required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not authorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Method Not Allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Bad Gateway",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/service/ping": {
+      "get": {
+        "tags": [
+          "service"
+        ],
+        "summary": "Ping-pong",
+        "operationId": "servicePing",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "message",
+            "description": "Optional incoming message",
+            "schema": {
+              "type": "string"
+            },
+            "example": "Ping"
+          }
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pong"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "service"
+        ],
+        "summary": "Ping-pong using POST",
+        "operationId": "servicePingPost",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PingRequest"
+              }
+            }
+          }
+        },
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pong"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SearchCriteria": {
+        "description": "Insurance policies offers search criteria",
+        "type": "object",
+        "required": [
+          "territory",
+          "insurance_limit",
+          "insurance_limit_currency",
+          "type",
+          "single_period_from",
+          "tourists",
+          "target"
+        ],
+        "properties": {
+          "territory": {
+            "description": "Country Code",
+            "type": "string",
+            "enum": [
+              "europe",
+              "schengen",
+              "cis",
+              "global"
+            ],
+            "example": "global"
+          },
+          "insurance_limit": {
+            "description": "Sum insured",
+            "type": "number",
+            "enum": [
+              3000,
+              30000,
+              50000
+            ],
+            "example": 30000
+          },
+          "insurance_limit_currency": {
+            "description": "Insurance Currency",
+            "$ref": "#/components/schemas/Currency"
+          },
+          "type": {
+            "description": "Type of Insurance",
+            "type": "string",
+            "enum": [
+              "single"
+            ],
+            "example": "single"
+          },
+          "single_period_from": {
+            "description": "Departure Date",
+            "$ref": "#/components/schemas/ShortDate"
+          },
+          "single_period_till": {
+            "description": "Departure Date",
+            "$ref": "#/components/schemas/ShortDate"
+          },
+          "tourists": {
+            "description": "List of tourists",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Tourist"
+            }
+          },
+          "target": {
+            "description": "Type of Activities",
+            "type": "string",
+            "enum": [
+              "sport",
+              "tourism",
+              "work"
+            ],
+            "example": "tourism"
+          },
+          "citizenship": {
+            "description": "Citizenship",
+            "type": "string",
+            "example": "Turkey"
+          },
+          "price_currency": {
+            "description": "Currency in which to return the cost of the service",
+            "$ref": "#/components/schemas/Currency"
+          },
+          "lang": {
+            "description": "The language on which to return the name and description of tariff",
+            "type": "string",
+            "enum": [
+              "ru",
+              "ua",
+              "en"
+            ],
+            "example": "en"
+          },
+          "program_id": {
+            "description": "The name of the program",
+            "$ref": "#/components/schemas/InsuranceProgramId"
+          }
+        }
+      },
+      "SearchResults": {
+        "description": "Array of offers",
+        "type": "object",
+        "required": [
+          "offers"
+        ],
+        "properties": {
+          "offers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Offer"
+            }
+          }
+        }
+      },
+      "Offer": {
+        "description": "Insurance policy offer",
+        "type": "object",
+        "required": [
+          "offerId",
+          "id",
+          "cost",
+          "name",
+          "desc",
+          "currency"
+        ],
+        "properties": {
+          "offerId": {
+            "description": "Offer Id",
+            "$ref": "#/components/schemas/UUID"
+          },
+          "id": {
+            "description": "Program Id",
+            "$ref": "#/components/schemas/InsuranceProgramId",
+            "example": "sub_standart_vzr"
+          },
+          "cost": {
+            "description": "Insurance payment",
+            "type": "number",
+            "example": 234.72
+          },
+          "code": {
+            "description": "Internal ID of the tariff condition",
+            "type": "number",
+            "example": 4
+          },
+          "name": {
+            "description": "The name of tariff",
+            "type": "string",
+            "example": "Standard"
+          },
+          "desc": {
+            "description": "The description of tariff",
+            "type": "string",
+            "example": "Standard"
+          },
+          "currency": {
+            "description": "Currency in which currency is valued",
+            "$ref": "#/components/schemas/Currency"
+          },
+          "covid_inc": {
+            "description": "Is COVID case included into the insurance",
+            "type": "boolean",
+            "example": true
+          }
+        }
+      },
+      "InsuranceProgramId": {
+        "description": "The name of the program",
+        "type": "string",
+        "enum": [
+          "cpa_vzr_standart",
+          "sub_standart_vzr",
+          "sub_premium_vzr"
+        ]
+      },
+      "Tourist": {
+        "description": "Tourist personal data",
+        "type": "object",
+        "required": [
+          "name_first",
+          "name_last",
+          "phone",
+          "city",
+          "email",
+          "birthday",
+          "passport"
+        ],
+        "properties": {
+          "name_first": {
+            "description": "First name",
+            "type": "string",
+            "example": "Petro"
+          },
+          "name_last": {
+            "description": "Last name",
+            "type": "string",
+            "example": "Petrovsky"
+          },
+          "phone": {
+            "description": "Phone number",
+            "$ref": "#/components/schemas/PhoneNumber"
+          },
+          "city": {
+            "description": "City",
+            "type": "string",
+            "example": "Odesa"
+          },
+          "address": {
+            "description": "Home address",
+            "type": "string",
+            "example": "Myasoedovskaya str."
+          },
+          "build": {
+            "description": "Home building number",
+            "type": "string",
+            "example": 8
+          },
+          "email": {
+            "description": "Personal email",
+            "$ref": "#/components/schemas/Email"
+          },
+          "birthday": {
+            "description": "Birthday",
+            "$ref": "#/components/schemas/ShortDate"
+          },
+          "passport": {
+            "description": "passport",
+            "type": "string",
+            "example": "FE 123456"
+          }
+        }
+      },
+      "Email": {
+        "description": "An email",
+        "type": "string",
+        "pattern": "^.+?@.+\\..+?$",
+        "example": "contact@org.co.uk"
+      },
+      "PhoneNumber": {
+        "description": "A phone number",
+        "type": "string",
+        "pattern": "^\\+[0-9]+$",
+        "example": "+32123456789"
+      },
+      "ShortDate": {
+        "description": "Date in format YYYY-mm-dd",
+        "type": "string",
+        "format": "date",
+        "example": "2020-11-21"
+      },
+      "Currency": {
+        "description": "The ISO4217 currency code",
+        "type": "string",
+        "pattern": "^[A-Z]{3}$",
+        "minLength": 3,
+        "maxLength": 3,
+        "example": "EUR"
+      },
+      "UUID": {
+        "description": "Unique identifier for Offers and Orders",
+        "type": "string",
+        "format": "uuid",
+        "minLength": 36,
+        "maxLength": 36,
+        "pattern": "^[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}$",
+        "example": "11111111-2222-3333-4444-000000000001"
+      },
+      "Error": {
+        "description": "Object describing an error",
+        "type": "object",
+        "required": [
+          "message",
+          "code"
+        ],
+        "properties": {
+          "message": {
+            "description": "Error message",
+            "type": "string",
+            "example": "Something went wrong"
+          },
+          "code": {
+            "description": "Error code",
+            "type": "string",
+            "pattern": "^[0-9A-Z]+$",
+            "example": "BAD_REQUEST"
+          }
+        }
+      },
+      "PingRequest": {
+        "description": "Request options for Ping",
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "properties": {
+          "message": {
+            "description": "Request message",
+            "type": "string",
+            "example": "Ping"
+          }
+        }
+      },
+      "Pong": {
+        "description": "Pong response object",
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "properties": {
+          "message": {
+            "description": "Response message",
+            "type": "string",
+            "example": "Pong"
+          },
+          "date": {
+            "description": "Current server date",
+            "type": "string",
+            "format": "date-time",
+            "example": "2021-04-14T23:20:50.52Z"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "orgid_auth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
