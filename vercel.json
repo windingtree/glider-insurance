@@ -7,18 +7,22 @@
       "use": "@vercel/static-build"
     },
     {
-      "src": "api/**/*.js",
-      "use": "@vercel/node"
-    },
-    {
       "src": "public/**",
       "use": "@vercel/static"
+    },
+    {
+      "src": "doc/**",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "api/**/*.js",
+      "use": "@vercel/node"
     }
   ],
   "rewrites": [
     {
       "source": "/api/doc/(.*)",
-      "destination": "/public/$1"
+      "destination": "/doc/$1"
     }
   ],
   "redirects": [

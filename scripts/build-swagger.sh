@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-API_DOC_FOLDER="./public"
+API_DOC_FOLDER="./doc"
 VERSIONS=( "v1" )
 
 mkdir -p $API_DOC_FOLDER
@@ -11,16 +11,12 @@ do
   echo "Building schema for API $version"
   mkdir -p $API_DOC_FOLDER/$version
   cp -r ./swagger/src/* "$API_DOC_FOLDER/$version"
-  echo "Swagger UI index file copied to the $API_DOC_FOLDER/$version"
   cp -r ./swagger/api/$version/* "$API_DOC_FOLDER/$version"
-  echo "Swagger schema files are copied to the $API_DOC_FOLDER/$version"
   API_DOC_URL_ESC=$(printf '%s\n' "/api/doc/$version" | sed -e 's/[]\/$*.^[]/\\&/g')
   API_VERSION_URL_ESC=$(printf '%s\n' "/api/$version" | sed -e 's/[]\/$*.^[]/\\&/g')
   sed -i "s/API_HOST_URL/$API_DOC_URL_ESC/g" $API_DOC_FOLDER/$version/index.html
   sed -i "s/API_VERSION_URL/$API_VERSION_URL_ESC/g" $API_DOC_FOLDER/$version/swagger.yaml
-  echo "Swagger UI index file for $version is updated to use a proper sources";
   npx js-yaml $API_DOC_FOLDER/$version/swagger.yaml > $API_DOC_FOLDER/$version/swagger.json
-  echo "Swagge yaml schema for $version is converted to the json format"
 done
 
 echo "Swagger schemas are built and Swagger UI is ready!"
