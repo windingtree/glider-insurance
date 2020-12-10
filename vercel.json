@@ -53,11 +53,11 @@
   ],
   "env": {
     "MONGO_URL": "@mongo_url",
-    "MONGO_DB_NAME": "@mongo_db_name",
-    "DEFAULT_NETWORK": "@default_network",
-    "INFURA_URI": "@infura_uri",
-    "PROVIDER_EKTA_DID": "@provider_ekta_did",
-    "PROVIDER_EKTA_BASE_URL": "@provider_ekta_base_url",
+    "MONGO_DB_NAME": "insurance-staging",
+    "DEFAULT_NETWORK": "ropsten",
+    "INFURA_URI": "https://ropsten.infura.io/v3/6dcc07fbf73a4a22b4076979946bd0ff",
+    "PROVIDER_EKTA_DID": "did:orgid:0x253b2241c8ab7c4af7cf998feb0861cfa277abf011db95bd37a3712dfb57aba6",
+    "PROVIDER_EKTA_BASE_URL": "https://api.ic-ekta.com",
     "PROVIDER_EKTA_API_ID": "@provider_ekta_api_id",
     "PROVIDER_EKTA_API_PASSWORD": "@provider_ekta_api_password"
   }
