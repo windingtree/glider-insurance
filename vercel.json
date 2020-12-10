@@ -23,6 +23,14 @@
     {
       "source": "/api/doc/(.*)",
       "destination": "/public/api/doc/$1"
+    },
+    {
+      "source": "/api/v1/offers/search",
+      "destination": "/api/v1/offers/search.js"
+    },
+    {
+      "source": "/api/v1/service/ping",
+      "destination": "/api/v1/service/ping.js"
     }
   ],
   "redirects": [

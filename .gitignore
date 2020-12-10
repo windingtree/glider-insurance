@@ -27,7 +27,7 @@ coverage
 
 # Compiled files
 build/Release
-public/v*/**
+public/api/**
 !public/.gitkeep
 
 # Dependency directories

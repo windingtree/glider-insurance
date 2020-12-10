@@ -35,7 +35,7 @@ const functionDecorator = (
     req.start = process.hrtime();
 
     // Fetch swagger schema
-    const swaggerJson = require(`../../public/${apiVersion}/swagger.json`);
+    const swaggerJson = require(`../../public/api/doc/${apiVersion}/swagger.json`);
     const schema = getDeepValue(swaggerJson, `paths.${apiPath}`);
 
     // Schema existence validation
