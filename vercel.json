@@ -6,7 +6,7 @@
       "src": "package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "public"
+        "outputDirectory": "public"
       }
     },
     {
@@ -25,7 +25,7 @@
   "rewrites": [
     {
       "source": "/api/doc/(.*)",
-      "destination": "/doc/$1"
+      "destination": "/public/$1"
     }
   ],
   "redirects": [
