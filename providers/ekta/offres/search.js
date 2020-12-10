@@ -8,6 +8,7 @@ const { request } = require('../../../shared/utils/rest');
 const {
   getProviderConfig
 } = require('../../../shared/config');
+const { saveOffers } = require('../../../shared/mongo/models/offers');
 
 module.exports = async req => {
   const {
@@ -25,8 +26,12 @@ module.exports = async req => {
     }
   );
 
-  return response.map(o => ({
+  const offers = response.map(o => ({
     offerId: uuidv4(),
     ...o
-  }))
+  }));
+
+  await saveOffers(offers);
+
+  return offers;
 };

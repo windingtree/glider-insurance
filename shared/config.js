@@ -8,6 +8,7 @@ const PROVIDERS = {
   }
 };
 module.exports.PROVIDERS = PROVIDERS;
+module.exports.MONGO_URL = process.env.MONGO_URL;
 
 // Extract config of the provider by the name
 module.exports.getProviderConfig = name => Object.entries(PROVIDERS)
