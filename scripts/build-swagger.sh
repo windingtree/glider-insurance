@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-API_DOC_FOLDER="./doc"
+API_DOC_FOLDER="./public"
 VERSIONS=( "v1" )
 
 mkdir -p $API_DOC_FOLDER

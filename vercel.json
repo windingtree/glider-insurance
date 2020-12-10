@@ -11,10 +11,6 @@
       "use": "@vercel/static"
     },
     {
-      "src": "doc/**",
-      "use": "@vercel/static"
-    },
-    {
       "src": "api/**/*.js",
       "use": "@vercel/node"
     }
