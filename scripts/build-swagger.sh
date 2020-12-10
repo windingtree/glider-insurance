@@ -3,6 +3,8 @@
 API_DOC_FOLDER="./public"
 VERSIONS=( "v1" )
 
+mkdir -p $API_DOC_FOLDER
+
 # Build docs for all API versions
 for version in "${VERSIONS[@]}"
 do
