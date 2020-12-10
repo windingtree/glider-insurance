@@ -17,6 +17,7 @@ do
   sed -i "s/API_HOST_URL/$API_DOC_URL_ESC/g" $API_DOC_FOLDER/$version/index.html
   sed -i "s/API_VERSION_URL/$API_VERSION_URL_ESC/g" $API_DOC_FOLDER/$version/swagger.yaml
   npx js-yaml $API_DOC_FOLDER/$version/swagger.yaml > $API_DOC_FOLDER/$version/swagger.json
+  rm -rf $API_DOC_FOLDER/$version/swagger.yaml
 done
 
 echo "Swagger schemas are built and Swagger UI is ready!"
