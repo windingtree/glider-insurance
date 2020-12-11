@@ -27,7 +27,8 @@ coverage
 
 # Compiled files
 build/Release
-public
+public/api/**
+!public/.gitkeep
 
 # Dependency directories
 node_modules/

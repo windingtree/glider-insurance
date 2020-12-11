@@ -14,6 +14,11 @@ const { getDeepValue } = require('../utils/object');
 const { isAuthorized } = require('../utils/auth');
 const { validateWithSchemaOrRef } = require('../utils/validators');
 
+// Provider-related utilities
+const {
+  buildAuth: buildEktaAuth
+} = require('../../providers/ekta/utils/auth');
+
 // Decorate serverless function with support for:
 // - error handling
 // - request method validation
@@ -30,7 +35,7 @@ const functionDecorator = (
     req.start = process.hrtime();
 
     // Fetch swagger schema
-    const swaggerJson = require(`../../public/${apiVersion}/swagger.json`);
+    const swaggerJson = require(`../../public/api/doc/${apiVersion}/swagger.json`);
     const schema = getDeepValue(swaggerJson, `paths.${apiPath}`);
 
     // Schema existence validation
@@ -88,6 +93,14 @@ const functionDecorator = (
 
       // Authenticate the request
       await isAuthorized(req, authScope);
+
+      // Prepare auth credentials for the provider
+      switch (req.provider) {
+        case 'ekta':
+          req.providerAuth = await buildEktaAuth();
+          break;
+        default:
+      }
     }
 
     // Request parameters validation
@@ -161,7 +174,7 @@ const functionDecorator = (
     }
 
     // Execute function
-    const response = await func();
+    const response = await func(req, res);
 
     // Response data validation
     const responseSchema = getDeepValue(

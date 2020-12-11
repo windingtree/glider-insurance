@@ -73,6 +73,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+        502:
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 
   /service/ping:
     get:
@@ -121,18 +127,81 @@ components:
       description: Insurance policies offers search criteria
       type: object
       required:
-        - query
+        - territory
+        - insurance_limit
+        - insurance_limit_currency
+        - type
+        - single_period_from
+        - tourists
+        - target
       properties:
-        query:
-          description: Search query
+        territory:
+          description: Country Code
           type: string
-          example: test
+          enum:
+            - europe
+            - schengen
+            - cis
+            - global
+          example: global
+        insurance_limit:
+          description: Sum insured
+          type: number
+          enum:
+            - 3000
+            - 30000
+            - 50000
+          example: 30000
+        insurance_limit_currency:
+          description: Insurance Currency
+          $ref: "#/components/schemas/Currency"
+        type:
+          description: Type of Insurance
+          type: string
+          enum:
+            - single # Single trip
+          example: single
+        single_period_from:
+          description: Departure Date
+          $ref: "#/components/schemas/ShortDate"
+        single_period_till:
+          description: Departure Date
+          $ref: "#/components/schemas/ShortDate"
+        tourists:
+          description: List of tourists
+          type: array
+          items:
+            $ref: "#/components/schemas/Tourist"
+        target:
+          description: Type of Activities
+          type: string
+          enum:
+            - sport
+            - tourism
+            - work
+          example: tourism
+        citizenship:
+          description: Citizenship
+          type: string
+          example: Turkey
+        price_currency:
+          description: Currency in which to return the cost of the service
+          $ref: "#/components/schemas/Currency"
+        lang:
+          description: The language on which to return the name and description of tariff
+          type: string
+          enum:
+            - ru # Russian
+            - ua # Ukrainian
+            - en # English
+          example: en
+        program_id:
+          description: The name of the program
+          $ref: "#/components/schemas/InsuranceProgramId"
 
     SearchResults:
       description: Array of offers
       type: object
-      required:
-        - offers
       properties:
         offers:
           type: array
@@ -142,9 +211,125 @@ components:
     Offer:
       description: Insurance policy offer
       type: object
+      required:
+        - offerId
+        - id
+        - cost
+        - name
+        - desc
+        - currency
       properties:
-        id:
+        offerId:
+          description: Offer Id
           $ref: "#/components/schemas/UUID"
+        id:
+          description: Program Id
+          $ref: "#/components/schemas/InsuranceProgramId"
+          example: sub_standart_vzr
+        cost:
+          description: Insurance payment
+          type: number
+          example: 234.72
+        code:
+          description: Internal ID of the tariff condition
+          type: number
+          example: 4
+        name:
+          description: The name of tariff
+          type: string
+          example: Standard
+        desc:
+          description: The description of tariff
+          type: string
+          example: Standard
+        currency:
+          description: Currency in which currency is valued
+          $ref: "#/components/schemas/Currency"
+        covid_inc:
+          description: Is COVID case included into the insurance
+          type: boolean
+          example: true
+
+    InsuranceProgramId:
+      description: The name of the program
+      type: string
+      enum:
+        - cpa_vzr_standart # 3000 EUR
+        - sub_standart_vzr # 30000 EUR
+        - sub_premium_vzr  # ???
+        - cpa_vzr_premium  # 50000 USD
+
+    Tourist:
+      description: Tourist personal data
+      type: object
+      required:
+        - name_first
+        - name_last
+        - phone
+        - city
+        - email
+        - birthday
+        - passport
+      properties:
+        name_first:
+          description: First name
+          type: string
+          example: Petro
+        name_last:
+          description: Last name
+          type: string
+          example: Petrovsky
+        phone:
+          description: Phone number
+          $ref: "#/components/schemas/PhoneNumber"
+        city:
+          description: City
+          type: string
+          example: Odesa
+        address:
+          description: Home address
+          type: string
+          example: Myasoedovskaya str.
+        build:
+          description: Home building number
+          type: string
+          example: 8
+        email:
+          description: Personal email
+          $ref: "#/components/schemas/Email"
+        birthday:
+          description: Birthday
+          $ref: "#/components/schemas/ShortDate"
+        passport:
+          description: passport
+          type: string
+          example: FE 123456
+
+    Email:
+      description: An email
+      type: string
+      pattern: '^.+?@.+\..+?$'
+      example: contact@org.co.uk
+
+    PhoneNumber:
+      description: A phone number
+      type: string
+      pattern: '^\+[0-9]+$'
+      example: "+32123456789"
+
+    ShortDate:
+      description: Date in format YYYY-mm-dd
+      type: string
+      format: date
+      example: "2020-11-21"
+
+    Currency:
+      description: The ISO4217 currency code
+      type: string
+      pattern: "^[A-Z]{3}$"
+      minLength: 3
+      maxLength: 3
+      example: EUR
 
     UUID:
       description: Unique identifier for Offers and Orders
@@ -197,7 +382,7 @@ components:
           description: Current server date
           type: string
           format: date-time
-          example: 2021-04-14T23:20:50.52Z
+          example: "2021-04-14T23:20:50.52Z"
 
   securitySchemes:
     orgid_auth:

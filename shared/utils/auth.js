@@ -18,7 +18,7 @@ const {
 const {
   INFURA_URI,
   DEFAULT_NETWORK,
-  PROVIDERS_DIDS
+  PROVIDERS
 } = require('../config');
 const { toChecksObject } = require('../utils/object');
 
@@ -50,23 +50,31 @@ const verifyJWT = async (type, jwt) => {
         error.code = FORBIDDEN;
         break;
       default:
-        error.code = INTERNAL_SERVER_ERROR;
+        if (error.message === 'encrypted JWTs cannot be decoded') {
+          error.message = 'JWT is malformed';
+          error.code = FORBIDDEN;
+        } else {
+          error.code = INTERNAL_SERVER_ERROR;
+        }
     }
 
     throw new GliderError(error.message, error.code);
   }
 
   // Extract token content
-  const { payload: { exp, aud, iss, sub } } = decodedToken;
+  const { payload: { exp, aud, iss, scope = '' } } = decodedToken;
 
-  // Parse subject
-  const subject = sub.match(/^\[[\w"].*\]$/g)
-    ? JSON.parse(sub)
-    : sub.split(',');
+  // Parse permissions scope
+  const permissionsScope = scope.match(/^\[[\w"].*\]$/g)
+    ? JSON.parse(scope)
+    : scope.split(',');
 
   // Issuer should be defined
   if (!iss || iss === '') {
-    throw new GliderError('JWT is missing issuing ORGiD', FORBIDDEN);
+    throw new GliderError(
+      'JWT is missing issuing ORGiD',
+      FORBIDDEN
+    );
   }
 
   // Extract DID of the issuer
@@ -146,7 +154,7 @@ const verifyJWT = async (type, jwt) => {
         pubKey,
         {
           typ: 'JWT',
-          audience: PROVIDERS_DIDS,
+          audience: Object.keys(PROVIDERS), // List of DIDs
           clockTolerance: '1 min'
         }
       );
@@ -181,7 +189,7 @@ const verifyJWT = async (type, jwt) => {
     aud,
     iss,
     exp,
-    sub: subject,
+    scope: permissionsScope,
     didResult
   }
 };
@@ -200,8 +208,20 @@ module.exports.isAuthorized = async (req, scope) => {
   const [ authType, jwt ] = headers.authorization.split(' ');
   req.auth = await verifyJWT(authType, jwt);
 
+  // Set a type of provider for the request
+  req.provider = PROVIDERS[req.auth.aud]
+    ? PROVIDERS[req.auth.aud].name
+    : undefined;
+
+  if (!req.provider) {
+    throw new GliderError(
+      'Unknown insurance provider',
+      FORBIDDEN
+    );
+  }
+
   // Checking the requester ability execute the function in its scope
-  if (req.auth.sub.filter(s => scope.includes(s)).length === 0) {
+  if (req.auth.scope && req.auth.scope.filter(s => scope.includes(s)).length === 0) {
     throw new GliderError(
       `Not authorized to make requests in the scope: ${JSON.stringify(scope)}`,
       UNAUTHORIZED
@@ -215,7 +235,7 @@ module.exports.createToken = (
   issuer,
   fragment,
   audience,
-  subject,
+  scope,
   expiresIn
 ) => {
   const priv = JWK.asKey(
@@ -227,13 +247,14 @@ module.exports.createToken = (
   );
 
   return JWT.sign(
-    {},
+    {
+      scope: Array.isArray(scope) ? JSON.parse(scope) : scope
+    },
     priv,
     {
       audience,
       ...(issuer ? { issuer: `${issuer}${fragment ? '#' + fragment : ''}` } : {}),
       expiresIn,
-      subject,
       kid: false,
       header: { typ: 'JWT' }
     }
