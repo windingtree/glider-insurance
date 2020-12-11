@@ -247,13 +247,14 @@ module.exports.createToken = (
   );
 
   return JWT.sign(
-    {},
+    {
+      scope: Array.isArray(scope) ? JSON.parse(scope) : scope
+    },
     priv,
     {
       audience,
       ...(issuer ? { issuer: `${issuer}${fragment ? '#' + fragment : ''}` } : {}),
       expiresIn,
-      scope: Array.isArray(scope) ? JSON.parse(scope) : scope,
       kid: false,
       header: { typ: 'JWT' }
     }
