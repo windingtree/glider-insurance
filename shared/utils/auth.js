@@ -221,7 +221,7 @@ module.exports.isAuthorized = async (req, scope) => {
   }
 
   // Checking the requester ability execute the function in its scope
-  if (req.auth.scope.filter(s => scope.includes(s)).length === 0) {
+  if (req.auth.scope && req.auth.scope.filter(s => scope.includes(s)).length === 0) {
     throw new GliderError(
       `Not authorized to make requests in the scope: ${JSON.stringify(scope)}`,
       UNAUTHORIZED
