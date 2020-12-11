@@ -50,7 +50,12 @@ const verifyJWT = async (type, jwt) => {
         error.code = FORBIDDEN;
         break;
       default:
-        error.code = INTERNAL_SERVER_ERROR;
+        if (error.message === 'encrypted JWTs cannot be decoded') {
+          error.message = 'JWT is malformed';
+          error.code = FORBIDDEN;
+        } else {
+          error.code = INTERNAL_SERVER_ERROR;
+        }
     }
 
     throw new GliderError(error.message, error.code);

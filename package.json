@@ -9,7 +9,7 @@
     "test": "scripts/test.sh",
     "test:coverage": "COVERAGE=true scripts/test.sh",
     "test:coverage:ci": "COVERAGE=true CONTINUOUS_INTEGRATION=true scripts/test.sh",
-    "test:newman": "npx newman run ./test/newman/insurance.json"
+    "test:api": "npx newman run ./test/newman/insurance.json --environment ./test/newman/environment-local.json"
   },
   "repository": {
     "type": "git",

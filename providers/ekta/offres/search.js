@@ -1,4 +1,5 @@
 const { v4: uuidv4 } = require('uuid');
+const GliderError = require('../../../shared/error');
 const {
   HTTP_METHODS: {
     POST
@@ -26,12 +27,16 @@ module.exports = async req => {
     }
   );
 
-  const offers = response.map(o => ({
-    offerId: uuidv4(),
-    ...o
-  }));
+  let offers = [];
 
-  await saveOffers(offers);
+  if (response.length > 0) {
+    offers = response.map(o => ({
+      offerId: uuidv4(),
+      ...o
+    }));
+
+    await saveOffers(offers);
+  }
 
   return {
     offers

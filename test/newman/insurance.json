@@ -17,7 +17,7 @@
 							"script": {
 								"id": "24ca2e0e-129c-48d1-b2db-d86f56033e0d",
 								"exec": [
-									"pm.test(\"Status code is 200\", () => {",
+                  "pm.test(\"Status code is 200\", () => {",
 									"    pm.response.to.have.status(200);",
 									"    pm.response.to.be.withBody;",
 									"    pm.response.to.be.json;",
@@ -29,7 +29,8 @@
 									"const programIds = [",
 									"    'cpa_vzr_standart',",
 									"    'sub_standart_vzr',",
-									"    'sub_premium_vzr'",
+									"    'sub_premium_vzr',",
+									"    'cpa_vzr_premium'",
 									"]",
 									"",
 									"pm.test(\"Proper offers response\", () => {",
@@ -68,11 +69,6 @@
 									"key": "token",
 									"value": "{{AUTH_TOKEN}}",
 									"type": "string"
-								},
-								{
-									"key": "password",
-									"value": "{{AUTH_TOKEN}}",
-									"type": "string"
 								}
 							]
 						},
@@ -102,8 +98,7 @@
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
 			"name": "Services",
@@ -323,53 +318,7 @@
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		}
-	],
-	"event": [
-		{
-			"listen": "prerequest",
-			"script": {
-				"id": "cb207f4c-2ce3-4142-a427-ea9570efd64a",
-				"type": "text/javascript",
-				"exec": [
-					""
-				]
-			}
-		},
-		{
-			"listen": "test",
-			"script": {
-				"id": "adc425d0-1a33-4b2d-a85d-ddad07a5751f",
-				"type": "text/javascript",
-				"exec": [
-					""
-				]
-			}
-		}
-	],
-	"variable": [
-		{
-			"id": "73534aab-acf9-461d-ac53-ddae011bdefe",
-			"key": "API_URL",
-			"value": "http://localhost:3000"
-		},
-		{
-			"id": "5e4963f0-e435-4f3f-bb48-fa20fa27fb85",
-			"key": "AUTH_TOKEN",
-			"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJzdWIiOiJbXCJyZWFkOm9mZmVyc1wiXSIsImF1ZCI6ImRpZDpvcmdpZDoweDI1M2IyMjQxYzhhYjdjNGFmN2NmOTk4ZmViMD..."
-		},
-		{
-			"id": "7190aa4e-2e5e-4780-9a81-50ad1bbe4297",
-			"key": "MATCH_UUID",
-			"value": "/[0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12}/g"
-		},
-		{
-			"id": "cda425dc-db45-4297-af48-28fd6778cff4",
-			"key": "MATCH_ISO_DATE",
-			"value": "/\\d{4}-[01]\\d-[0-3]\\dT[0-2]\\d:[0-5]\\d:[0-5]\\d\\.\\d+([+-][0-2]\\d:[0-5]\\d|Z)/"
-		}
-	],
-	"protocolProfileBehavior": {}
+	]
 }

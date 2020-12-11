@@ -291,9 +291,6 @@
       "SearchResults": {
         "description": "Array of offers",
         "type": "object",
-        "required": [
-          "offers"
-        ],
         "properties": {
           "offers": {
             "type": "array",
@@ -361,7 +358,8 @@
         "enum": [
           "cpa_vzr_standart",
           "sub_standart_vzr",
-          "sub_premium_vzr"
+          "sub_premium_vzr",
+          "cpa_vzr_premium"
         ]
       },
       "Tourist": {

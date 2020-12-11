@@ -202,8 +202,6 @@ components:
     SearchResults:
       description: Array of offers
       type: object
-      required:
-        - offers
       properties:
         offers:
           type: array
@@ -258,7 +256,8 @@ components:
       enum:
         - cpa_vzr_standart # 3000 EUR
         - sub_standart_vzr # 30000 EUR
-        - sub_premium_vzr  # 50000 USD
+        - sub_premium_vzr  # ???
+        - cpa_vzr_premium  # 50000 USD
 
     Tourist:
       description: Tourist personal data

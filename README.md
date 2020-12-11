@@ -40,5 +40,5 @@ npm start
 and then start tests:
 
 ```bash
-npm run test:newman
+npm run test:api
 ```
