@@ -62,12 +62,12 @@ const verifyJWT = async (type, jwt) => {
   }
 
   // Extract token content
-  const { payload: { exp, aud, iss, sub } } = decodedToken;
+  const { payload: { exp, aud, iss, scope = '' } } = decodedToken;
 
-  // Parse subject
-  const subject = sub.match(/^\[[\w"].*\]$/g)
-    ? JSON.parse(sub)
-    : sub.split(',');
+  // Parse permissions scope
+  const permissionsScope = scope.match(/^\[[\w"].*\]$/g)
+    ? JSON.parse(scope)
+    : scope.split(',');
 
   // Issuer should be defined
   if (!iss || iss === '') {
@@ -189,7 +189,7 @@ const verifyJWT = async (type, jwt) => {
     aud,
     iss,
     exp,
-    sub: subject,
+    scope: permissionsScope,
     didResult
   }
 };
@@ -221,7 +221,7 @@ module.exports.isAuthorized = async (req, scope) => {
   }
 
   // Checking the requester ability execute the function in its scope
-  if (req.auth.sub.filter(s => scope.includes(s)).length === 0) {
+  if (req.auth.scope.filter(s => scope.includes(s)).length === 0) {
     throw new GliderError(
       `Not authorized to make requests in the scope: ${JSON.stringify(scope)}`,
       UNAUTHORIZED
@@ -235,7 +235,7 @@ module.exports.createToken = (
   issuer,
   fragment,
   audience,
-  subject,
+  scope,
   expiresIn
 ) => {
   const priv = JWK.asKey(
@@ -253,7 +253,7 @@ module.exports.createToken = (
       audience,
       ...(issuer ? { issuer: `${issuer}${fragment ? '#' + fragment : ''}` } : {}),
       expiresIn,
-      subject,
+      scope: Array.isArray(scope) ? JSON.parse(scope) : scope,
       kid: false,
       header: { typ: 'JWT' }
     }
