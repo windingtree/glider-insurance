@@ -7,16 +7,14 @@ const {
   ektaOrgId
 } = require('../test/config');
 
-const scopes = [
-  'read:offers'
-];
+const scopes = '';
 
 const token = createToken(
   entityKeyPriv,
   `did:orgid:${entityOrgId}`,
   entityKeyFragment,
   `did:orgid:${ektaOrgId}`,
-  JSON.stringify(scopes),
+  scopes,
   '2000 days'
 );
 

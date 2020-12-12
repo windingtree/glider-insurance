@@ -17,12 +17,13 @@
 							"script": {
 								"id": "24ca2e0e-129c-48d1-b2db-d86f56033e0d",
 								"exec": [
-                  "pm.test(\"Status code is 200\", () => {",
+									"pm.test(\"Status code is 200\", () => {",
 									"    pm.response.to.have.status(200);",
 									"    pm.response.to.be.withBody;",
 									"    pm.response.to.be.json;",
 									"});",
 									"const offersResponse = pm.response.json();",
+									"const body = JSON.parse(pm.request.body.raw);",
 									"const {",
 									"    offers",
 									"} = offersResponse;",
@@ -43,7 +44,9 @@
 									"            code,",
 									"            name,",
 									"            desc,",
-									"            currency",
+									"            currency,",
+									"            tourists,",
+									"            expiration",
 									"        } = o;",
 									"        pm.expect(offerId).to.match(new RegExp(pm.variables.MATCH_UUID));",
 									"        pm.expect(id).to.be.oneOf(programIds);",
@@ -54,7 +57,11 @@
 									"        pm.expect(name).to.be.a('string');",
 									"        pm.expect(desc).to.be.a('string');",
 									"        pm.expect(currency).to.be.a('string');",
+									"        pm.expect(tourists).to.deep.eq(body.tourists.map(t => t.id));",
+									"        pm.expect(expiration).to.be.match(new RegExp(pm.variables.MATCH_ISO_DATE));",
 									"    });",
+									"    pm.collectionVariables.set('offerId', offers[0].offerId);",
+									"    pm.collectionVariables.set('tourist1', offers[0].tourists[0]);",
 									"});"
 								],
 								"type": "text/javascript"
@@ -69,6 +76,11 @@
 									"key": "token",
 									"value": "{{AUTH_TOKEN}}",
 									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "{{AUTH_TOKEN}}",
+									"type": "string"
 								}
 							]
 						},
@@ -76,7 +88,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"territory\": \"global\",\n  \"insurance_limit\": 30000,\n  \"insurance_limit_currency\": \"EUR\",\n  \"type\": \"single\",\n  \"single_period_from\": \"2020-11-21\",\n  \"single_period_till\": \"2020-11-21\",\n  \"tourists\": [\n    {\n      \"name_first\": \"Petro\",\n      \"name_last\": \"Petrovsky\",\n      \"phone\": \"+32123456789\",\n      \"city\": \"Odesa\",\n      \"address\": \"Myasoedovskaya str.\",\n      \"build\": 8,\n      \"email\": \"contact@org.co.uk\",\n      \"birthday\": \"2020-11-21\",\n      \"passport\": \"FE 123456\"\n    }\n  ],\n  \"target\": \"tourism\",\n  \"citizenship\": \"Turkey\",\n  \"price_currency\": \"EUR\",\n  \"lang\": \"en\",\n  \"programm_id\": \"string\"\n}",
+							"raw": "{\n  \"territory\": \"global\",\n  \"insurance_limit\": 30000,\n  \"insurance_limit_currency\": \"EUR\",\n  \"type\": \"single\",\n  \"single_period_from\": \"2021-01-01\",\n  \"single_period_till\": \"2021-02-01\",\n  \"tourists\": [\n    {\n      \"id\": \"PAX1\",\n      \"name_first\": \"Petro\",\n      \"name_last\": \"Petrovsky\",\n      \"phone\": \"+32123456789\",\n      \"city\": \"Odesa\",\n      \"address\": \"Myasoedovskaya str.\",\n      \"build\": 8,\n      \"email\": \"contact@org.co.uk\",\n      \"birthday\": \"1979-11-21\",\n      \"passport\": \"FE 123456\"\n    }\n  ],\n  \"target\": \"tourism\",\n  \"citizenship\": \"Turkey\",\n  \"price_currency\": \"EUR\",\n  \"lang\": \"en\",\n  \"program_id\": \"sub_standart_vzr\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -98,7 +110,91 @@
 					},
 					"response": []
 				}
-			]
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Orders",
+			"item": [
+				{
+					"name": "Order create POST",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "b9a6715e-4bb7-4845-83f6-4dc15f20a0c4",
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    pm.response.to.have.status(200);",
+									"    pm.response.to.be.withBody;",
+									"    pm.response.to.be.json;",
+									"});",
+									"const ordersResponse = pm.response.json();",
+									"const {",
+									"    orderId,",
+									"    offerId,",
+									"    id,",
+									"    number,",
+									"    cost,",
+									"    currency",
+									"} = ordersResponse;",
+									"",
+									"pm.test(\"Proper orders response\", () => {",
+									"    pm.expect(orderId).to.match(new RegExp(pm.variables.MATCH_UUID));",
+									"    pm.expect(offerId).to.match(new RegExp(pm.variables.MATCH_UUID));",
+									"    pm.expect(id).to.be.a('number');",
+									"    pm.expect(number).to.be.a('number');",
+									"    pm.expect(cost).to.be.a('number');",
+									"    pm.expect(currency).to.be.a('string');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{AUTH_TOKEN}}",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "{{AUTH_TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"offerId\": \"{{offerId}}\",\n  \"insurer\": \"{{tourist1}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_URL}}/api/v1/orders",
+							"host": [
+								"{{API_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"orders"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
 		},
 		{
 			"name": "Services",
@@ -318,7 +414,32 @@
 					},
 					"response": []
 				}
-			]
+			],
+			"protocolProfileBehavior": {}
 		}
-	]
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "cb207f4c-2ce3-4142-a427-ea9570efd64a",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "adc425d0-1a33-4b2d-a85d-ddad07a5751f",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [],
+	"protocolProfileBehavior": {}
 }

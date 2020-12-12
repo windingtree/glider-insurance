@@ -17,6 +17,8 @@ servers:
 tags:
   - name: offers
     description: Search for insurance policies offers
+  - name: orders
+    description: Creation of insurance orders
   - name: service
     description: API service functions
 
@@ -32,17 +34,18 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/SearchCriteria"
+              $ref: "#/components/schemas/OffersSearchCriteria"
       security:
         - orgid_auth:
             - read:offers
+            - write:offers
       responses:
         200:
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SearchResults"
+                $ref: "#/components/schemas/OffersSearchResults"
         400:
           description: Bad Request
           content:
@@ -57,6 +60,78 @@ paths:
                 $ref: "#/components/schemas/Error"
         403:
           description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        405:
+          description: Method Not Allowed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          description: Internal Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        502:
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /orders:
+    post:
+      tags:
+        - orders
+      operationId: ordersCreate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderCreateBody"
+      security:
+        - orgid_auth:
+            - read:offers
+            - write:offers
+            - write:orders
+      responses:
+        200:
+          description: Order Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InsuranceOrder"
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          description: Authorization required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        404:
+          description: Not Found
           content:
             application/json:
               schema:
@@ -123,7 +198,7 @@ paths:
 
 components:
   schemas:
-    SearchCriteria:
+    OffersSearchCriteria:
       description: Insurance policies offers search criteria
       type: object
       required:
@@ -132,35 +207,23 @@ components:
         - insurance_limit_currency
         - type
         - single_period_from
+        - single_period_till
         - tourists
         - target
+        - program_id
       properties:
         territory:
           description: Country Code
-          type: string
-          enum:
-            - europe
-            - schengen
-            - cis
-            - global
-          example: global
+          $ref: "#/components/schemas/TerritoryCode"
         insurance_limit:
           description: Sum insured
-          type: number
-          enum:
-            - 3000
-            - 30000
-            - 50000
-          example: 30000
+          $ref: "#/components/schemas/InsuranceLimit"
         insurance_limit_currency:
           description: Insurance Currency
           $ref: "#/components/schemas/Currency"
         type:
           description: Type of Insurance
-          type: string
-          enum:
-            - single # Single trip
-          example: single
+          $ref: "#/components/schemas/InsuranceType"
         single_period_from:
           description: Departure Date
           $ref: "#/components/schemas/ShortDate"
@@ -172,14 +235,10 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Tourist"
+          uniqueItems: true
         target:
           description: Type of Activities
-          type: string
-          enum:
-            - sport
-            - tourism
-            - work
-          example: tourism
+          $ref: "#/components/schemas/ActivitiesType"
         citizenship:
           description: Citizenship
           type: string
@@ -189,17 +248,27 @@ components:
           $ref: "#/components/schemas/Currency"
         lang:
           description: The language on which to return the name and description of tariff
-          type: string
-          enum:
-            - ru # Russian
-            - ua # Ukrainian
-            - en # English
-          example: en
+          $ref: "#/components/schemas/DescriptionLanguage"
         program_id:
           description: The name of the program
           $ref: "#/components/schemas/InsuranceProgramId"
 
-    SearchResults:
+    OrderCreateBody:
+      description: Order creation criteria
+      type: object
+      required:
+        - offerId
+        - insurer
+      properties:
+        offerId:
+          description: Offer Id
+          $ref: "#/components/schemas/UUID"
+        insurer:
+          description: Insurer Tourist Id
+          type: string
+          example: PAX1
+
+    OffersSearchResults:
       description: Array of offers
       type: object
       properties:
@@ -213,6 +282,7 @@ components:
       type: object
       required:
         - offerId
+        - expiration
         - id
         - cost
         - name
@@ -222,6 +292,11 @@ components:
         offerId:
           description: Offer Id
           $ref: "#/components/schemas/UUID"
+        expiration:
+          description: The offer expiration time
+          type: string
+          format: date-time
+          example: "2021-04-12T23:20:50.52Z"
         id:
           description: Program Id
           $ref: "#/components/schemas/InsuranceProgramId"
@@ -249,6 +324,87 @@ components:
           description: Is COVID case included into the insurance
           type: boolean
           example: true
+        tourists:
+          description: A list of tourists Ids
+          type: array
+          items:
+            $ref: "#/components/schemas/TouristId"
+
+    InsuranceOrder:
+      description: Insurance Order
+      type: object
+      required:
+        - orderId
+        - offerId
+        - id
+        - number
+        - cost
+        - currency
+      properties:
+        orderId:
+          description: The Order Id
+          $ref: "#/components/schemas/UUID"
+        offerId:
+          description: Confirmed Offer Id
+          $ref: "#/components/schemas/UUID"
+        id:
+          description: The contract Identifier
+          type: number
+          example: 123
+        number:
+          description: The contract number is indicated in PDF
+          type: number
+          example: 1222
+        cost:
+          description: Insurance payment
+          type: number
+          example: 234.72
+        currency:
+          description: Currency of the insurance payment
+          $ref: "#/components/schemas/Currency"
+
+    InsuranceType:
+      description: Type of Insurance
+      type: string
+      enum:
+        - single # Single trip
+      example: single
+
+    TerritoryCode:
+      description: Territory Code
+      type: string
+      enum:
+        - europe
+        - schengen
+        - cis
+        - global
+      example: global
+
+    InsuranceLimit:
+      description: Sum insured
+      type: number
+      enum:
+        - 30000
+        - 50000
+      example: 30000
+
+    ActivitiesType:
+      description: Type of Activities
+      type: string
+      enum:
+        - sport
+        - tourism
+        - work
+      example: tourism
+
+    DescriptionLanguage:
+      description: The language on which to return the name and description of tariff
+      type: string
+      enum:
+        - ru # Russian
+        - ua # Ukrainian
+        - en # English
+      example: en
 
     InsuranceProgramId:
       description: The name of the program
@@ -263,6 +419,7 @@ components:
       description: Tourist personal data
       type: object
       required:
+        - id
         - name_first
         - name_last
         - phone
@@ -271,6 +428,9 @@ components:
         - birthday
         - passport
       properties:
+        id:
+          description: The tourist Id
+          $ref: "#/components/schemas/TouristId"
         name_first:
           description: First name
           type: string
@@ -330,6 +490,11 @@ components:
       minLength: 3
       maxLength: 3
       example: EUR
+
+    TouristId:
+      description: Insurer Tourist Id
+      type: string
+      example: PAX1
 
     UUID:
       description: Unique identifier for Offers and Orders

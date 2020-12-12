@@ -5,19 +5,25 @@ const {
     INTERNAL_SERVER_ERROR
   }
 } = require('../../../shared/constants');
-const searchOffers = require('../../../providers/ekta/offres/search');
+const searchOffers = require('../../../providers/ekta/offers/search');
 
 const search = async req => {
 
   switch (req.provider) {
     case 'ekta':
-      return searchOffers(req);
+      switch (req.method) {
+        case 'POST':
+          return searchOffers(req);
+        default:
+      }
+      break;
     default:
-      throw new GliderError(
-        'Unknown provider',
-        INTERNAL_SERVER_ERROR
-      );
   }
+
+  throw new GliderError(
+    'Unknown provider',
+    INTERNAL_SERVER_ERROR
+  );
 };
 
 module.exports = functionDecorator(
@@ -25,6 +31,7 @@ module.exports = functionDecorator(
   'v1',
   '/offers/search',
   [
-    'read:offers'
+    'read:offers',
+    'write:offers'
   ]
 );

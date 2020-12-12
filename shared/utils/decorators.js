@@ -219,7 +219,16 @@ const functionDecorator = (
         : INTERNAL_SERVER_ERROR_CODE)
       .json({
         message: error.message,
-        ...(error.code ? { code: error.code } : {})
+        ...(
+          error.code
+            ? { code: error.code }
+            : {}
+        ),
+        ...(
+          process.env.NODE_ENV === 'development'
+            ? { stack: error.stack }
+            : {}
+        )
       });
   }
 };

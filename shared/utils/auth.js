@@ -65,9 +65,9 @@ const verifyJWT = async (type, jwt) => {
   const { payload: { exp, aud, iss, scope = '' } } = decodedToken;
 
   // Parse permissions scope
-  const permissionsScope = scope.match(/^\[[\w"].*\]$/g)
+  const permissionsScope = (scope.match(/^\[[\w"].*\]$/g)
     ? JSON.parse(scope)
-    : scope.split(',');
+    : scope.split(',')).filter(s => s && s !== '');
 
   // Issuer should be defined
   if (!iss || iss === '') {
@@ -221,7 +221,9 @@ module.exports.isAuthorized = async (req, scope) => {
   }
 
   // Checking the requester ability execute the function in its scope
-  if (req.auth.scope && req.auth.scope.filter(s => scope.includes(s)).length === 0) {
+  if (req.auth.scope &&
+    req.auth.scope.length > 0 &&
+    req.auth.scope.filter(s => scope.includes(s)).length === 0) {
     throw new GliderError(
       `Not authorized to make requests in the scope: ${JSON.stringify(scope)}`,
       UNAUTHORIZED
