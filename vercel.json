@@ -33,6 +33,10 @@
       "destination": "/api/v1/orders.js"
     },
     {
+      "source": "/api/v1/orders/(.*)",
+      "destination": "/api/v1/order.js?orderId=$1"
+    },
+    {
       "source": "/api/v1/service/ping",
       "destination": "/api/v1/service/ping.js"
     }

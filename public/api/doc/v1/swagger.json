@@ -147,6 +147,7 @@
         "tags": [
           "orders"
         ],
+        "summary": "Create an order",
         "operationId": "ordersCreate",
         "requestBody": {
           "required": true,
@@ -249,22 +250,131 @@
             }
           }
         }
-      },
-      "put": {
+      }
+    },
+    "/orders/{orderId}": {
+      "get": {
         "tags": [
           "orders"
         ],
-        "operationId": "ordersEmitContract",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ContractEmitBody"
+        "summary": "Get an order",
+        "operationId": "ordersGet",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "orderId",
+            "description": "An order Id",
+            "schema": {
+              "$ref": "#/components/schemas/UUID"
+            }
+          }
+        ],
+        "security": [
+          {
+            "orgid_auth": [
+              "read:orders"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InsuranceOrder"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authorization required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not authorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Method Not Allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Bad Gateway",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
               }
             }
           }
-        },
+        }
+      },
+      "post": {
+        "tags": [
+          "orders"
+        ],
+        "summary": "Emit an insurance contract",
+        "operationId": "ordersEmitContract",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "orderId",
+            "description": "An order Id",
+            "schema": {
+              "$ref": "#/components/schemas/UUID"
+            }
+          }
+        ],
         "security": [
           {
             "orgid_auth": [
@@ -627,19 +737,21 @@
           "currency": {
             "description": "Currency of the insurance payment",
             "$ref": "#/components/schemas/Currency"
-          }
-        }
-      },
-      "ContractEmitBody": {
-        "description": "Signing of the insurance contract",
-        "type": "object",
-        "required": [
-          "orderId"
-        ],
-        "properties": {
-          "orderId": {
-            "description": "The Order Id",
-            "$ref": "#/components/schemas/UUID"
+          },
+          "issued": {
+            "description": "An insurance contract issuance indicator",
+            "type": "boolean",
+            "example": false
+          },
+          "issuanceDate": {
+            "description": "A data of the contract issuance",
+            "type": "string",
+            "format": "date-time",
+            "example": "2021-04-14T23:20:50.52Z"
+          },
+          "pdfUrl": {
+            "description": "A link to the contract PDF file",
+            "$ref": "#/components/schemas/PdfUrl"
           }
         }
       },
@@ -650,13 +762,17 @@
           "pdfUrl"
         ],
         "properties": {
-          "code": {
+          "pdfUrl": {
             "description": "The contract PDF URL",
-            "type": "string",
-            "format": "url",
-            "example": "https://api.ic-ekta.com/travel/download/123"
+            "$ref": "#/components/schemas/PdfUrl"
           }
         }
+      },
+      "PdfUrl": {
+        "description": "The contract PDF URL",
+        "type": "string",
+        "format": "url",
+        "example": "https://api.ic-ekta.com/travel/download/123"
       },
       "InsuranceType": {
         "description": "Type of Insurance",

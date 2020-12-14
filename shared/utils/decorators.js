@@ -119,9 +119,12 @@ const functionDecorator = (
 
         if (parameterValue) {
           const requestModelRef = parameter.schema;
+          const requestModelRefType = requestModelRef.$ref
+            ? requestModelRef.$ref // $ref type
+            : requestModelRef;     // simple type, object
           const requestValidationResult = validateWithSchemaOrRef(
-            null,
-            requestModelRef,
+            swaggerJson,
+            requestModelRefType,
             parameterValue
           );
           if (requestValidationResult !== null) {

@@ -27,7 +27,7 @@ module.exports = async req => {
 
   const {
     orderId
-  } = req.body;
+  } = req.query;
 
   // Get the order the database
   const order = await getOrder(orderId);
@@ -39,9 +39,8 @@ module.exports = async req => {
     );
   }
 
-  const isEmitted = getDeepValue(order, 'extraData.emitted');
-
-  if (isEmitted) {
+  // Contract from the order should not be issued
+  if (order.issued) {
     throw new GliderError(
       'The contract has been emitted already',
       BAD_REQUEST
@@ -108,14 +107,12 @@ module.exports = async req => {
   const pdfUrl = `${baseUrl}/travel/download/${order.id}`;
   const updatedOrder = {
     ...order,
-    extraData: {
-      ...order.extraData,
-      emitted: true,
-      emittedDate: new Date(),
-      pdfUrl
-    }
+    issued: true,
+    issuanceDate: new Date(),
+    pdfUrl
   };
 
+  // Save updated order
   await updateOrder(orderId, updatedOrder);
 
   return {

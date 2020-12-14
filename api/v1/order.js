@@ -5,15 +5,18 @@ const {
     INTERNAL_SERVER_ERROR
   }
 } = require('../../shared/constants');
-const createOrder = require('../../providers/ekta/orders/create');
+const getOrder = require('../../providers/ekta/orders/get');
+const issueContract = require('../../providers/ekta/orders/issueContract');
 
 const order = async req => {
 
   switch (req.provider) {
     case 'ekta':
       switch (req.method) {
+        case 'GET':
+          return getOrder(req);
         case 'POST':
-          return createOrder(req);
+          return issueContract(req);
         default:
       }
       break;
@@ -29,9 +32,8 @@ const order = async req => {
 module.exports = functionDecorator(
   order,
   'v1',
-  '/orders',
+  '/orders/{orderId}',
   [
-    'read:offers',
     'read:orders',
     'write:orders'
   ]
