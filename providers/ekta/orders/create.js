@@ -95,7 +95,7 @@ module.exports = async req => {
     ...order,
     extraData: {
       requestBody,
-      sms_code: response['sms_code']
+      sms_code: response['sms_code'] // @todo Resolve the "No sms_code". Issue on the EKTA side!
     }
   };
 

@@ -2,11 +2,11 @@ const { functionDecorator } = require('../../shared/utils/decorators');
 const GliderError = require('../../shared/error');
 const {
   HTTP_STATUS: {
-    NOT_IMPLEMENTED,
     INTERNAL_SERVER_ERROR
   }
 } = require('../../shared/constants');
 const createOrder = require('../../providers/ekta/orders/create');
+const emitContract = require('../../providers/ekta/orders/emitContract');
 
 const order = async req => {
 
@@ -16,11 +16,7 @@ const order = async req => {
         case 'POST':
           return createOrder(req);
         case 'PUT':
-          // Signing an order
-          throw new GliderError(
-            'Not Implemented Yet',
-            NOT_IMPLEMENTED
-          );
+          return emitContract(req);
         default:
       }
       break;
@@ -39,6 +35,7 @@ module.exports = functionDecorator(
   '/orders',
   [
     'read:offers',
+    'read:orders',
     'write:orders'
   ]
 );

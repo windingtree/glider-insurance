@@ -155,6 +155,70 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
+    put:
+      tags:
+        - orders
+      operationId: ordersEmitContract
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContractEmitBody"
+      security:
+        - orgid_auth:
+            - read:orders
+            - write:orders
+      responses:
+        200:
+          description: Order Code Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContractEmitResult"
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          description: Authorization required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        403:
+          description: Not authorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        405:
+          description: Method Not Allowed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          description: Internal Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        502:
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
   /service/ping:
     get:
       tags:
@@ -362,6 +426,28 @@ components:
         currency:
           description: Currency of the insurance payment
           $ref: "#/components/schemas/Currency"
+
+    ContractEmitBody:
+      description: Signing of the insurance contract
+      type: object
+      required:
+        - orderId
+      properties:
+        orderId:
+          description: The Order Id
+          $ref: "#/components/schemas/UUID"
+
+    ContractEmitResult:
+      description: An order signing code
+      type: object
+      required:
+        - pdfUrl
+      properties:
+        code:
+          description: The contract PDF URL
+          type: string
+          format: url
+          example: https://api.ic-ekta.com/travel/download/123
 
     InsuranceType:
       description: Type of Insurance
