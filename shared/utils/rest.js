@@ -5,6 +5,7 @@ const {
     BAD_GATEWAY
   }
 } = require('../constants');
+const { getDeepValue } = require('../utils/object');
 
 // Send HTTP request
 module.exports.request = async (
@@ -15,7 +16,7 @@ module.exports.request = async (
   auth
 ) => {
   const url = `${baseURL}${apiPath}`;
-  const timeout = 5000;
+  const timeout = 10000;
 
   // COnfigure connection timeout handler
   const cancelTokenSource = axios.CancelToken.source();
@@ -61,6 +62,14 @@ module.exports.request = async (
     });
 
     clearTimeout(connectionTimeout);
+
+    // EKTA provider errors in the message with code 200 OK
+    const ektaErrorMessage = getDeepValue(response, 'data.text_error');
+
+    if (response.data && ektaErrorMessage) {
+      throw new Error(ektaErrorMessage);
+    }
+
     return response.data;
   } catch (error) {
 
@@ -71,9 +80,15 @@ module.exports.request = async (
       console.log(error.response.status);
       console.log(error.response.headers);
 
-      // EKTA provider errors
-      if (error.response.data && error.response.data['text_error']) {
-        error.message = error.response.data['text_error'];
+      const ektaErrorMessage = getDeepValue(error, 'response.data.text_error');
+
+      // EKTA provider errors in the message with error code
+      if (error.response.data && ektaErrorMessage) {
+        error.message = ektaErrorMessage;
+      }
+      // Simard errors
+      else if (error.response.data && error.response.data.message) {
+        error.message = error.response.data.message;
       }
     } else if (error.request) {
       // The request was made but no response was received

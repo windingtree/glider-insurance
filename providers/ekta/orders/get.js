@@ -25,6 +25,7 @@ module.exports = async req => {
 
   // Exclude extra data from the response
   delete order.extraData;
+  delete order._id;
 
   return order;
 };

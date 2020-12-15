@@ -20,6 +20,10 @@ const {
 const {
   saveOrder
 } = require('../../../shared/mongo/models/orders');
+const {
+  getGuarantee
+} = require('../utils/simard');
+const { orgId: ektaOrgId } = getProviderConfig('ekta');
 
 module.exports = async req => {
   const {
@@ -28,6 +32,7 @@ module.exports = async req => {
 
   const {
     offerId,
+    guaranteeId,
     insurer
   } = req.body;
 
@@ -41,9 +46,53 @@ module.exports = async req => {
     );
   }
 
+  // Validate order payment confirmation on the Simard
+  const guarantee = await getGuarantee(guaranteeId);
+
+  // Currency: must match offer currency
+  if (guarantee.currency !== offer.currency) {
+    throw new GliderError(
+      'Invalid Guarantee currency',
+      BAD_REQUEST
+    );
+  }
+
+  // Amount: must be equal or higher (careful with fixed point decimal handling)
+  if (guarantee.amount < offer.cost) {
+    throw new GliderError(
+      'Invalid Guarantee amount',
+      BAD_REQUEST
+    );
+  }
+
+  // creditorOrgId: must be EKTA ORGiD (or Hotel’s ORGiD for multi-tenant setup), otherwise return an HTTP 400 error “”
+  if (guarantee.creditorOrgId !== ektaOrgId) {
+    throw new GliderError(
+      'Guarantee not meant for EKTA Insurance provider organization',
+      BAD_REQUEST
+    );
+  }
+
+  // debtorOrgId: must match the ORGiD of the offer requester, otherwise return an HTTP 400 error “Guarantee not created by offer requestor”
+  if (guarantee.debtorOrgId !== req.auth.didResult.id) {
+    throw new GliderError(
+      'Guarantee not created by offer requestor',
+      BAD_REQUEST
+    );
+  }
+
+  // expiration: must be >= 72h from now, otherwise return an HTTP 400 error “”
+  if (new Date(guarantee.expiration).getTime() - new Date().getTime() >= (72 * 60 * 60 * 1000)) {
+    throw new GliderError(
+      'Guarantee expiration is too short',
+      BAD_REQUEST
+    );
+  }
+
   // Build request object
   const requestBody = {
     insurer: offer.tourists[insurer],
+    program_id: offer['program_id'],
     // We should repeat all fields from the search request
     ...({
       ...offer.extraData.requestBody,
@@ -81,26 +130,32 @@ module.exports = async req => {
   });
 
   // Build order object
+  const pdfUrl = `${baseUrl}/travel/download/${response.id}`;
   const order = {
     orderId: uuidv4(),
     offerId: confirmedOfferId,
     id: response.id,
     number: response.number,
     cost: response.cost,
-    currency: response.currency
+    currency: response.currency,
+    pdfUrl
   };
 
   // Extended order version with information required for signing the contract
   const orderExtended = {
     ...order,
+    pdfUrl,
     extraData: {
       requestBody,
-      sms_code: response['sms_code'] // @todo Resolve the "No sms_code". Issue on the EKTA side!
+      guarantee
     }
   };
 
   // Save order to the database
   await saveOrder(orderExtended);
+
+  // @todo Agree with the EKTA: payment confirmation
+  // @todo Move here contract issuance code from the issueContract.js file
 
   return order;
 };

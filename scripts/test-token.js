@@ -18,4 +18,5 @@ const token = createToken(
   '2000 days'
 );
 
+console.log('Token: Test company -> GI');
 console.log(token);

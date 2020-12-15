@@ -50,37 +50,35 @@ module.exports = async req => {
   // Signing a contract with SMS code
   // @todo Implement signing with SMS code.
 
-  const code = getDeepValue(order, 'extraData.sms_code');
+  // const code = getDeepValue(order, 'extraData.sms_code');
 
-  if (!code) {
-    throw new GliderError(
-      'The contract signing code not found in the order',
-      BAD_REQUEST
-    );
-  }
+  // if (!code) {
+  //   throw new GliderError(
+  //     'The contract signing code not found in the order',
+  //     BAD_REQUEST
+  //   );
+  // }
 
-  const signingResponse = await request(
-    baseUrl,
-    '/travel/sign_sms',
-    POST,
-    {
-      id: order.id,
-      sms_code: code
-    },
-    {
-      method: 'body',
-      data: req.providerAuth
-    }
-  );
+  // const signingResponse = await request(
+  //   baseUrl,
+  //   '/travel/sign_sms',
+  //   POST,
+  //   {
+  //     id: order.id,
+  //     sms_code: code
+  //   },
+  //   {
+  //     method: 'body',
+  //     data: req.providerAuth
+  //   }
+  // );
 
-  if (!signingResponse.id || signingResponse.id !== order.id) {
-    throw new GliderError(
-      'Signing of the insurance contract has failed',
-      BAD_REQUEST // @note Is this is right code?
-    );
-  }
-
-  // @todo Validate order payment confirmation on the Simard
+  // if (!signingResponse.id || signingResponse.id !== order.id) {
+  //   throw new GliderError(
+  //     'Signing of the insurance contract has failed',
+  //     BAD_REQUEST // @note Is this is right code?
+  //   );
+  // }
 
   // Send request for the contract emitting
   const response = await request(
@@ -104,18 +102,14 @@ module.exports = async req => {
     );
   }
 
-  const pdfUrl = `${baseUrl}/travel/download/${order.id}`;
   const updatedOrder = {
     ...order,
     issued: true,
-    issuanceDate: new Date(),
-    pdfUrl
+    issuanceDate: new Date()
   };
 
   // Save updated order
   await updateOrder(orderId, updatedOrder);
 
-  return {
-    pdfUrl
-  };
+  return updatedOrder;
 };

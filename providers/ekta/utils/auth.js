@@ -2,7 +2,8 @@ const {
   getProviderConfig
 } = require('../../../shared/config');
 
-module.exports.buildAuth = async () => {
+// Returns in-body EKTA auth configuration
+module.exports.buildAuth = () => {
   const {
     auth
   } = getProviderConfig('ekta');
@@ -10,4 +11,13 @@ module.exports.buildAuth = async () => {
   return {
     auth
   };
+};
+
+// Return headers config for the Simard auth
+module.exports.buildSimardAuth = () => {
+  const {
+    simardAuth
+  } = getProviderConfig('ekta');
+
+  return simardAuth;
 };
