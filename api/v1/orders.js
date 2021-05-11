@@ -1,19 +1,19 @@
-const { functionDecorator } = require('../../../shared/utils/decorators');
-const GliderError = require('../../../shared/error');
+const { functionDecorator } = require('../../shared/utils/decorators');
+const GliderError = require('../../shared/error');
 const {
   HTTP_STATUS: {
     INTERNAL_SERVER_ERROR
   }
-} = require('../../../shared/constants');
-const searchOffers = require('../../../providers/ekta/offers/search');
+} = require('../../shared/constants');
+const createOrder = require('../../providers/ekta/orders/create');
 
-const search = async req => {
+const order = async req => {
 
   switch (req.provider) {
     case 'ekta':
       switch (req.method) {
         case 'POST':
-          return searchOffers(req);
+          return createOrder(req);
         default:
       }
       break;
@@ -27,11 +27,12 @@ const search = async req => {
 };
 
 module.exports = functionDecorator(
-  search,
+  order,
   'v1',
-  '/offers/search',
+  '/orders',
   [
     'read:offers',
-    'write:offers'
+    'read:orders',
+    'write:orders'
   ]
 );

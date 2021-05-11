@@ -15,7 +15,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "24ca2e0e-129c-48d1-b2db-d86f56033e0d",
 								"exec": [
 									"pm.test(\"Status code is 200\", () => {",
 									"    pm.response.to.have.status(200);",
@@ -88,7 +87,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"territory\": \"global\",\n  \"insurance_limit\": 30000,\n  \"insurance_limit_currency\": \"EUR\",\n  \"type\": \"single\",\n  \"single_period_from\": \"2021-01-01\",\n  \"single_period_till\": \"2021-02-01\",\n  \"tourists\": [\n    {\n      \"id\": \"PAX1\",\n      \"name_first\": \"Petro\",\n      \"name_last\": \"Petrovsky\",\n      \"phone\": \"+32123456789\",\n      \"city\": \"Odesa\",\n      \"address\": \"Myasoedovskaya str.\",\n      \"build\": 8,\n      \"email\": \"contact@org.co.uk\",\n      \"birthday\": \"1979-11-21\",\n      \"passport\": \"FE 123456\"\n    }\n  ],\n  \"target\": \"tourism\",\n  \"citizenship\": \"Turkey\",\n  \"price_currency\": \"EUR\",\n  \"lang\": \"en\",\n  \"program_id\": \"sub_standart_vzr\"\n}",
+							"raw": "{\n  \"territory\": \"global\",\n  \"currency\": \"EUR\",\n  \"type\": \"single\",\n  \"period_from\": \"2021-01-01\",\n  \"period_till\": \"2021-02-01\",\n  \"tourists\": [\n    {\n      \"id\": \"PAX1\",\n      \"name_first\": \"Petro\",\n      \"name_last\": \"Petrovsky\",\n      \"phone\": \"+32123456789\",\n      \"city\": \"Odesa\",\n      \"address\": \"Myasoedovskaya str.\",\n      \"build\": 8,\n      \"email\": \"contact@org.co.uk\",\n      \"birthday\": \"1979-11-21\",\n      \"passport\": \"FE 123456\"\n    }\n  ],\n  \"target\": \"tourism\",\n  \"citizenship\": \"Turkey\",\n  \"price_currency\": \"EUR\",\n  \"lang\": \"en\",\n  \"program_id\": \"sub_standart_vzr\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -110,8 +109,7 @@
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
 			"name": "Orders",
@@ -122,7 +120,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "b9a6715e-4bb7-4845-83f6-4dc15f20a0c4",
 								"exec": [
 									"pm.test(\"Status code is 200\", () => {",
 									"    pm.response.to.have.status(200);",
@@ -193,8 +190,7 @@
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
 			"name": "Services",
@@ -205,7 +201,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "4ca23848-2220-4c7d-bf81-bba79c87f9be",
 								"exec": [
 									"pm.test(\"Status code is 200\", () => {",
 									"    pm.response.to.have.status(200);",
@@ -252,7 +247,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "74568d43-c809-4743-978f-9290015fc9dd",
 								"exec": [
 									"pm.test(\"Status code is 200\", () => {",
 									"    pm.response.to.have.status(200);",
@@ -305,7 +299,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "16e1aef1-213b-41e5-b713-28f80121f65e",
 								"exec": [
 									"pm.test(\"Status code is 200\", () => {",
 									"    pm.response.to.have.status(200);",
@@ -361,7 +354,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "2ea73f71-e59c-4bb5-b714-356dad69c653",
 								"exec": [
 									"pm.test(\"Status code is 400\", () => {",
 									"    pm.response.to.have.status(400);",
@@ -414,8 +406,7 @@
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		}
 	],
 	"event": [

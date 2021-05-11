@@ -1,3 +1,9 @@
+const GliderError = require('../error');
+const {
+  HTTP_STATUS: {
+    INTERNAL_SERVER_ERROR
+  }
+} = require('../constants');
 const connection = require('./connection');
 
 // Create expiration index
@@ -44,7 +50,7 @@ module.exports.findOne = findOne;
 // Insert one document
 const insertOne = async (collection, document, options) => {
   const db = await connection();
-  return db.collection(collection)
+  const result = await db.collection(collection)
     .insertOne(
       {
         ...document,
@@ -52,13 +58,20 @@ const insertOne = async (collection, document, options) => {
       },
       options
     );
+  if (result.insertedCount !== 1) {
+    throw new GliderError(
+      'Document has not been saved',
+      INTERNAL_SERVER_ERROR
+    );
+  }
+  return result;
 };
 module.exports.insertOne = insertOne;
 
 // Insert many documents
 const insertMany = async (collection, documents, options) => {
   const db = await connection();
-  return db.collection(collection)
+  const result = await db.collection(collection)
     .insertMany(
       documents.map(d => ({
         ...d,
@@ -71,13 +84,21 @@ const insertMany = async (collection, documents, options) => {
           : {})
       }
     );
+  if (result.insertedCount !== documents.length) {
+    // @note Is this is right behaviour?
+    throw new GliderError(
+      'Documents has not been saved completely',
+      INTERNAL_SERVER_ERROR
+    );
+  }
+  return result;
 };
 module.exports.insertMany = insertMany;
 
 // Update document
 const updateOne = async (collection, filter, document, options) => {
   const db = await connection();
-  return db.collection(collection)
+  const result = await db.collection(collection)
     .updateOne(
       filter,
       {
@@ -88,5 +109,12 @@ const updateOne = async (collection, filter, document, options) => {
       },
       options
     );
+  if (result.matchedCount !== 1 || result.modifiedCount !== 1) {
+    throw new GliderError(
+      'Document has not been updated',
+      INTERNAL_SERVER_ERROR
+    );
+  }
+  return result;
 };
 module.exports.updateOne = updateOne;

@@ -119,9 +119,12 @@ const functionDecorator = (
 
         if (parameterValue) {
           const requestModelRef = parameter.schema;
+          const requestModelRefType = requestModelRef.$ref
+            ? requestModelRef.$ref // $ref type
+            : requestModelRef;     // simple type, object
           const requestValidationResult = validateWithSchemaOrRef(
-            null,
-            requestModelRef,
+            swaggerJson,
+            requestModelRefType,
             parameterValue
           );
           if (requestValidationResult !== null) {
@@ -160,6 +163,9 @@ const functionDecorator = (
           requestBody
         );
         if (requestBodyValidationResult !== null) {
+          console.log('###', swaggerJson.components.schemas.OrderCreateBody);
+          console.log('@@@', requestBodySchema);
+          console.log('===', requestBody);
           throw new GliderError(
             `Request validation error: ${requestBodyValidationResult}`,
             BAD_REQUEST
@@ -219,7 +225,16 @@ const functionDecorator = (
         : INTERNAL_SERVER_ERROR_CODE)
       .json({
         message: error.message,
-        ...(error.code ? { code: error.code } : {})
+        ...(
+          error.code
+            ? { code: error.code }
+            : {}
+        ),
+        ...(
+          process.env.NODE_ENV === 'development'
+            ? { stack: error.stack }
+            : {}
+        )
       });
   }
 };

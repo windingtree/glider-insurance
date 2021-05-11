@@ -29,10 +29,10 @@ module.exports = async () => {
   const client = await connectionPromise;
   database = client.db(MONGO_DB_NAME);
 
-  // Subscribe Database events
-  database.on('error', console.error);
-  database.on('parseError', console.error);
-  database.on('close', () => {
+  // Subscribe Database client events
+  client.on('error', console.error);
+  client.on('parseError', console.error);
+  client.on('close', () => {
     connectionPromise = undefined;
     database = undefined;
   });

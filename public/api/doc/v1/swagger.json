@@ -24,6 +24,10 @@
       "description": "Search for insurance policies offers"
     },
     {
+      "name": "orders",
+      "description": "Creation of insurance orders"
+    },
+    {
       "name": "service",
       "description": "API service functions"
     }
@@ -41,7 +45,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/SearchCriteria"
+                "$ref": "#/components/schemas/OffersSearchCriteria"
               }
             }
           }
@@ -49,7 +53,8 @@
         "security": [
           {
             "orgid_auth": [
-              "read:offers"
+              "read:offers",
+              "write:offers"
             ]
           }
         ],
@@ -59,7 +64,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SearchResults"
+                  "$ref": "#/components/schemas/OffersSearchResults"
                 }
               }
             }
@@ -86,6 +91,341 @@
           },
           "403": {
             "description": "Not authorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Method Not Allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Bad Gateway",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/orders": {
+      "post": {
+        "tags": [
+          "orders"
+        ],
+        "summary": "Create an order",
+        "operationId": "ordersCreate",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderCreateBody"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "orgid_auth": [
+              "read:offers",
+              "write:offers",
+              "write:orders"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Order Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InsuranceOrder"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authorization required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not authorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Method Not Allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Bad Gateway",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/orders/{orderId}": {
+      "get": {
+        "tags": [
+          "orders"
+        ],
+        "summary": "Get an order",
+        "operationId": "ordersGet",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "orderId",
+            "description": "An order Id",
+            "schema": {
+              "$ref": "#/components/schemas/UUID"
+            }
+          }
+        ],
+        "security": [
+          {
+            "orgid_auth": [
+              "read:orders"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InsuranceOrder"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authorization required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not authorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Method Not Allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Bad Gateway",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "orders"
+        ],
+        "summary": "Emit an insurance contract",
+        "operationId": "ordersEmitContract",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "orderId",
+            "description": "An order Id",
+            "schema": {
+              "$ref": "#/components/schemas/UUID"
+            }
+          }
+        ],
+        "security": [
+          {
+            "orgid_auth": [
+              "read:orders",
+              "write:orders"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Order Code Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContractEmitResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authorization required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not authorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
             "content": {
               "application/json": {
                 "schema": {
@@ -192,103 +532,82 @@
   },
   "components": {
     "schemas": {
-      "SearchCriteria": {
+      "OffersSearchCriteria": {
         "description": "Insurance policies offers search criteria",
         "type": "object",
         "required": [
           "territory",
-          "insurance_limit",
-          "insurance_limit_currency",
-          "type",
-          "single_period_from",
+          "period_from",
+          "period_till",
           "tourists",
-          "target"
+          "target",
+          "currency"
         ],
         "properties": {
           "territory": {
             "description": "Country Code",
-            "type": "string",
-            "enum": [
-              "europe",
-              "schengen",
-              "cis",
-              "global"
-            ],
-            "example": "global"
+            "$ref": "#/components/schemas/TerritoryCode"
           },
-          "insurance_limit": {
-            "description": "Sum insured",
-            "type": "number",
-            "enum": [
-              3000,
-              30000,
-              50000
-            ],
-            "example": 30000
-          },
-          "insurance_limit_currency": {
-            "description": "Insurance Currency",
-            "$ref": "#/components/schemas/Currency"
-          },
-          "type": {
-            "description": "Type of Insurance",
-            "type": "string",
-            "enum": [
-              "single"
-            ],
-            "example": "single"
-          },
-          "single_period_from": {
-            "description": "Departure Date",
+          "period_from": {
+            "description": "Insurance period start date",
             "$ref": "#/components/schemas/ShortDate"
           },
-          "single_period_till": {
-            "description": "Departure Date",
+          "period_till": {
+            "description": "Insurance period end date",
             "$ref": "#/components/schemas/ShortDate"
+          },
+          "target": {
+            "description": "Type of Activities",
+            "$ref": "#/components/schemas/ActivitiesType"
+          },
+          "citizenship": {
+            "description": "Citizenship",
+            "type": "string",
+            "example": "Ukraine"
+          },
+          "currency": {
+            "description": "Insurance price currency",
+            "$ref": "#/components/schemas/Currency",
+            "enum": [
+              "EUR",
+              "USD"
+            ]
           },
           "tourists": {
             "description": "List of tourists",
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/Tourist"
-            }
-          },
-          "target": {
-            "description": "Type of Activities",
-            "type": "string",
-            "enum": [
-              "sport",
-              "tourism",
-              "work"
-            ],
-            "example": "tourism"
-          },
-          "citizenship": {
-            "description": "Citizenship",
-            "type": "string",
-            "example": "Turkey"
-          },
-          "price_currency": {
-            "description": "Currency in which to return the cost of the service",
-            "$ref": "#/components/schemas/Currency"
-          },
-          "lang": {
-            "description": "The language on which to return the name and description of tariff",
-            "type": "string",
-            "enum": [
-              "ru",
-              "ua",
-              "en"
-            ],
-            "example": "en"
-          },
-          "program_id": {
-            "description": "The name of the program",
-            "$ref": "#/components/schemas/InsuranceProgramId"
+            },
+            "uniqueItems": true
           }
         }
       },
-      "SearchResults": {
+      "OrderCreateBody": {
+        "description": "Order creation criteria",
+        "type": "object",
+        "required": [
+          "offerId",
+          "guaranteeId",
+          "insurer"
+        ],
+        "properties": {
+          "offerId": {
+            "description": "Offer Id",
+            "$ref": "#/components/schemas/UUID"
+          },
+          "guaranteeId": {
+            "description": "Payment guarantee Id",
+            "$ref": "#/components/schemas/UUID"
+          },
+          "insurer": {
+            "description": "Insurer Tourist Id",
+            "type": "string",
+            "example": "PAX1"
+          }
+        }
+      },
+      "OffersSearchResults": {
         "description": "Array of offers",
         "type": "object",
         "properties": {
@@ -305,6 +624,7 @@
         "type": "object",
         "required": [
           "offerId",
+          "expiration",
           "id",
           "cost",
           "name",
@@ -315,6 +635,12 @@
           "offerId": {
             "description": "Offer Id",
             "$ref": "#/components/schemas/UUID"
+          },
+          "expiration": {
+            "description": "The offer expiration time",
+            "type": "string",
+            "format": "date-time",
+            "example": "2021-04-12T23:20:50.52Z"
           },
           "id": {
             "description": "Program Id",
@@ -349,13 +675,139 @@
             "description": "Is COVID case included into the insurance",
             "type": "boolean",
             "example": true
+          },
+          "tourists": {
+            "description": "A list of tourists Ids",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TouristId"
+            }
           }
         }
+      },
+      "InsuranceOrder": {
+        "description": "Insurance Order",
+        "type": "object",
+        "required": [
+          "orderId",
+          "contractId",
+          "cost",
+          "currency"
+        ],
+        "properties": {
+          "orderId": {
+            "description": "The Order Id",
+            "$ref": "#/components/schemas/UUID"
+          },
+          "offerId": {
+            "description": "Confirmed Offer Id",
+            "$ref": "#/components/schemas/UUID"
+          },
+          "contractId": {
+            "description": "The contract Identifier",
+            "type": "number",
+            "example": 123
+          },
+          "cost": {
+            "description": "Insurance payment",
+            "type": "number",
+            "example": 234.72
+          },
+          "currency": {
+            "description": "Currency of the insurance payment",
+            "$ref": "#/components/schemas/Currency"
+          },
+          "issued": {
+            "description": "An insurance contract issuance indicator",
+            "type": "boolean",
+            "example": false
+          },
+          "issuanceDate": {
+            "description": "A data of the contract issuance",
+            "type": "string",
+            "format": "date-time",
+            "example": "2021-04-14T23:20:50.52Z"
+          },
+          "pdfUrl": {
+            "description": "A link to the contract PDF file",
+            "$ref": "#/components/schemas/PdfUrl"
+          }
+        }
+      },
+      "ContractEmitResult": {
+        "description": "An order signing code",
+        "type": "object",
+        "required": [
+          "pdfUrl"
+        ],
+        "properties": {
+          "pdfUrl": {
+            "description": "The contract PDF URL",
+            "$ref": "#/components/schemas/PdfUrl"
+          }
+        }
+      },
+      "PdfUrl": {
+        "description": "The contract PDF URL",
+        "type": "string",
+        "format": "url",
+        "example": "https://api.ic-ekta.com/travel/download/123"
+      },
+      "InsuranceType": {
+        "description": "Type of Insurance",
+        "type": "string",
+        "enum": [
+          "single"
+        ],
+        "example": "single"
+      },
+      "TerritoryCode": {
+        "description": "Territory Code",
+        "type": "string",
+        "enum": [
+          "europe",
+          "schengen",
+          "cis",
+          "global"
+        ],
+        "example": "global"
+      },
+      "InsuranceLimit": {
+        "description": "Sum insured",
+        "type": "number",
+        "enum": [
+          3000,
+          30000,
+          50000
+        ],
+        "example": 30000
+      },
+      "ActivitiesType": {
+        "description": "Type of Activities",
+        "type": "string",
+        "enum": [
+          "sport",
+          "tourism",
+          "work"
+        ],
+        "example": "tourism"
+      },
+      "DescriptionLanguage": {
+        "description": "The language on which to return the name and description of tariff",
+        "type": "string",
+        "enum": [
+          "ru",
+          "ua",
+          "en"
+        ],
+        "example": "en"
       },
       "InsuranceProgramId": {
         "description": "The name of the program",
         "type": "string",
         "enum": [
+          "cpa_vzr_basic",
+          "standart_vzr_sub",
           "cpa_vzr_standart",
           "sub_standart_vzr",
           "sub_premium_vzr",
@@ -366,6 +818,7 @@
         "description": "Tourist personal data",
         "type": "object",
         "required": [
+          "id",
           "name_first",
           "name_last",
           "phone",
@@ -375,6 +828,10 @@
           "passport"
         ],
         "properties": {
+          "id": {
+            "description": "The tourist Id",
+            "$ref": "#/components/schemas/TouristId"
+          },
           "name_first": {
             "description": "First name",
             "type": "string",
@@ -444,6 +901,11 @@
         "minLength": 3,
         "maxLength": 3,
         "example": "EUR"
+      },
+      "TouristId": {
+        "description": "Insurer Tourist Id",
+        "type": "string",
+        "example": "PAX1"
       },
       "UUID": {
         "description": "Unique identifier for Offers and Orders",
