@@ -690,9 +690,7 @@
         "type": "object",
         "required": [
           "orderId",
-          "offerId",
-          "id",
-          "number",
+          "contractId",
           "cost",
           "currency"
         ],
@@ -705,15 +703,10 @@
             "description": "Confirmed Offer Id",
             "$ref": "#/components/schemas/UUID"
           },
-          "id": {
+          "contractId": {
             "description": "The contract Identifier",
             "type": "number",
             "example": 123
-          },
-          "number": {
-            "description": "The contract number is indicated in PDF",
-            "type": "number",
-            "example": 1222
           },
           "cost": {
             "description": "Insurance payment",

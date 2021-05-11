@@ -109,7 +109,7 @@ const processCalculationResponse = (
           ...o,
           tourists: touristsKeyObj,
           expiration,
-          'program_id': requestBodies[index]['programm_id'], // @note Because of typo in the EKTA API
+          'program_id': o.id,
           extraData: {
             requestBody: requestBodies[index]
           }
@@ -127,10 +127,10 @@ const processSetAllResponses = (
   touristsKeyObj,
   requestBodies
 ) => allResponses.reduce(
-  (a, request) => {
-    if (request.length > 0) {
+  (a, response) => {
+    if (response.length > 0) {
       const [short, extended] = processCalculationResponse(
-        request,
+        response,
         touristsKeyObj,
         requestBodies
       );
@@ -151,6 +151,7 @@ const processSetAllResponses = (
   [[], []]
 );
 
+// Create and send request for offers
 module.exports = async req => {
   const [
     tourists,

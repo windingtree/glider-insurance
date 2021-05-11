@@ -3,7 +3,13 @@
 module.exports.getDeepValue = (obj, path) => path
   .split('.')
   .reduce(
-    (res, prop) => res ? res[prop] : undefined,
+    (res, prop) => {
+      const arrProp = prop.match(/(\w+)\[(\d+)\]$/i);
+      if (arrProp) {
+        return res ? res[arrProp[1]][Number(arrProp[2])] : undefined;
+      }
+      return res ? res[prop] : undefined;
+    },
     obj
   );
 

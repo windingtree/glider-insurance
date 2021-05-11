@@ -29,7 +29,37 @@ module.exports.request = async (
   );
 
   try {
-    // Make a call
+    // // Make a call
+    // console.log('@@@', JSON.stringify({
+    //   url,
+    //   method,
+    //   timeout,
+    //   headers: {
+    //     'Accept': 'application/json',
+    //     'Accept-Encoding': 'gzip,deflate',
+    //     'Cache-Control': 'no-cache',
+    //     'Connection': 'keep-alive',
+    //     ...(
+    //       method !== 'get'
+    //         ? { 'Content-Type': 'application/json' }
+    //         : {}
+    //     ),
+    //     ...(
+    //       auth && auth.method === 'headers'
+    //         ? auth.data
+    //         : {}
+    //     )
+    //   },
+    //   data: {
+    //     ...data,
+    //     ...(
+    //       auth && auth.method === 'body'
+    //         ? auth.data
+    //         : {}
+    //     )
+    //   },
+    //   cancelToken: cancelTokenSource.token
+    // }, null, 2));
     const response = await axios({
       url,
       method,
@@ -69,6 +99,7 @@ module.exports.request = async (
     if (response.data && ektaErrorMessage) {
       throw new Error(ektaErrorMessage);
     }
+    console.log('===', JSON.stringify(response.data, null, 2));
 
     return response.data;
   } catch (error) {

@@ -52,7 +52,7 @@ describe('Authentication and Authorization Utilities', () => {
       });
       (decodedToken).should.to.have.a.property('payload').to.be.an('object');
       (decodedToken.payload).should.to.have.a.property('iss').to.equal(`did:orgid:${entityOrgId}#${entityKeyFragment}`);
-      (decodedToken.payload).should.to.have.a.property('sub').to.equal(JSON.stringify(scopes));
+      (decodedToken.payload).should.to.have.a.property('scope').to.equal(JSON.stringify(scopes));
     });
   });
 });

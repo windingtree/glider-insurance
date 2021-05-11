@@ -19,12 +19,12 @@ const {
   getOrder,
   updateOrder
 } = require('../../../shared/mongo/models/orders');
+const {
+  baseUrl
+} = getProviderConfig('ekta');
 
+// Issue contract by the order Id
 module.exports = async req => {
-  const {
-    baseUrl
-  } = getProviderConfig('ekta');
-
   const {
     orderId
   } = req.query;

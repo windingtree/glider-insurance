@@ -12,7 +12,7 @@ const {
 } = getProviderConfig('ekta');
 
 // Send request to the EKTA API for offers calculation
-const calculateOffers = (req, requestBody) => request(
+module.exports.calculateOffers = (req, requestBody) => request(
   baseUrl,
   '/travel/calculate',
   POST,
@@ -22,4 +22,3 @@ const calculateOffers = (req, requestBody) => request(
     data: req.providerAuth
   }
 );
-module.exports.calculateOffers = calculateOffers;

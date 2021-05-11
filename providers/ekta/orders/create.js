@@ -23,13 +23,12 @@ const {
 const {
   getGuarantee
 } = require('../utils/simard');
-const { orgId: ektaOrgId } = getProviderConfig('ekta');
+const {
+  orgId: ektaOrgId,
+  baseUrl
+} = getProviderConfig('ekta');
 
 module.exports = async req => {
-  const {
-    baseUrl
-  } = getProviderConfig('ekta');
-
   const {
     offerId,
     guaranteeId,
@@ -48,6 +47,7 @@ module.exports = async req => {
 
   // Validate order payment confirmation on the Simard
   const guarantee = await getGuarantee(guaranteeId);
+  console.log('GUARANTEE', guarantee);
 
   // Currency: must match offer currency
   if (guarantee.currency !== offer.currency) {
@@ -81,8 +81,8 @@ module.exports = async req => {
     );
   }
 
-  // expiration: must be >= 72h from now, otherwise return an HTTP 400 error “”
-  if (new Date(guarantee.expiration).getTime() - new Date().getTime() >= (72 * 60 * 60 * 1000)) {
+  // expiration: must be >= 72h from now, otherwise return an HTTP 400 error “Guarantee expiration is too short”
+  if ((new Date().getTime() + (72 * 60 * 60 * 1000)) >= new Date(guarantee.expiration).getTime()) {
     throw new GliderError(
       'Guarantee expiration is too short',
       BAD_REQUEST
@@ -102,6 +102,8 @@ module.exports = async req => {
       'payment_link': false
     })
   };
+
+  console.log('Request', JSON.stringify(requestBody, null, 2));
 
   // Send request ot the provider
   const response = await request(
@@ -133,11 +135,10 @@ module.exports = async req => {
   const pdfUrl = `${baseUrl}/travel/download/${response.id}`;
   const order = {
     orderId: uuidv4(),
-    offerId: confirmedOfferId,
-    id: response.id,
-    number: response.number,
+    contractId: response.id,
     cost: response.cost,
     currency: response.currency,
+    issued: false,
     pdfUrl
   };
 
@@ -146,6 +147,7 @@ module.exports = async req => {
     ...order,
     pdfUrl,
     extraData: {
+      confirmedOfferId,
       requestBody,
       guarantee
     }
